@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Redesigned 2020 Agenda Chart</title>
+		<style>
+			#chart {
+				font-family: sans-serif;
+				margin: 20px;
+			}
+
+			.axis path,
+			.axis line {
+				stroke: #ccc;
+			}
+
+			.tooltip {
+				position: absolute;
+				background: rgba(255, 255, 255, 0.9);
+				padding: 6px 10px;
+				border: 1px solid #aaa;
+				font-size: 12px;
+				pointer-events: none;
+				border-radius: 3px;
+				box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+			}
+
+			.legend-item {
+				cursor: pointer;
+				user-select: none;
+			}
+
+			.legend-color-box {
+				width: 12px;
+				height: 12px;
+				display: inline-block;
+				margin-right: 5px;
+				vertical-align: middle;
+			}
+
+			.legend-text {
+				vertical-align: middle;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- container for the SVG -->
+		<div id="chart"></div>
+
+		<!-- tooltip div (initially hidden) -->
+		<div id="tooltip" class="tooltip" style="opacity: 0"></div>
+
+		<script type="module">
+			import {
+				select,
+				scaleTime,
+				scaleLinear,
+				scaleOrdinal,
+				axisBottom,
+				axisLeft,
+				stack,
+				area,
+				stackOrderNone,
+				stackOffsetNone,
+				schemeCategory10,
+				timeParse,
+				max,
+				extent,
+				pointer,
+			} from "https://cdn.skypack.dev/d3@7";
+
+			//set up dimensions
+			const margin = { top: 20, right: 180, bottom: 40, left: 50 },
+				width = 900 - margin.left - margin.right,
+				height = 500 - margin.top - margin.bottom;
+
+			//create SVG
+			const svg = select("#chart")
+				.append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", `translate(${margin.left},${margin.top})`);
+
+			const rawData = [
+				// date format is "YYYY-MM-DD"
+				{
+					date: "2019-03-01",
+					race: 30,
+					healthcare: 20,
+					climate: 15,
+					immigration: 10,
+					jobs: 5,
+					china: 8,
+				},
+				{
+					date: "2019-03-08",
+					race: 35,
+					healthcare: 25,
+					climate: 18,
+					immigration: 12,
+					jobs: 7,
+					china: 10,
+				},
+				{
+					date: "2019-03-15",
+					race: 40,
+					healthcare: 22,
+					climate: 20,
+					immigration: 15,
+					jobs: 6,
+					china: 12,
+				},
+				{
+					date: "2019-03-22",
+					race: 38,
+					healthcare: 28,
+					climate: 22,
+					immigration: 18,
+					jobs: 9,
+					china: 14,
+				},
+				{
+					date: "2019-03-29",
+					race: 45,
+					healthcare: 30,
+					climate: 25,
+					immigration: 20,
+					jobs: 11,
+					china: 18,
+				},
+				{
+					date: "2019-04-05",
+					race: 50,
+					healthcare: 35,
+					climate: 28,
+					immigration: 22,
+					jobs: 12,
+					china: 20,
+				},
+				{
+					date: "2019-09-01",
+					race: 70,
+					healthcare: 50,
+					climate: 40,
+					immigration: 35,
+					jobs: 20,
+					china: 25,
+				},
+				{
+					date: "2019-09-08",
+					race: 65,
+					healthcare: 55,
+					climate: 45,
+					immigration: 38,
+					jobs: 22,
+					china: 30,
+				},
+				{
+					date: "2019-09-15",
+					race: 68,
+					healthcare: 52,
+					climate: 48,
+					immigration: 40,
+					jobs: 25,
+					china: 32,
+				},
+				// (etc.)
+			];
+
+			// parse dates and cast values
+			const parseDate = timeParse("%Y-%m-%d");
+
+			rawData.forEach((d) => {
+				d.date = parseDate(d.date);
+				// cast each topic count to number
+				d.race = +d.race;
+				d.healthcare = +d.healthcare;
+				d.climate = +d.climate;
+				d.immigration = +d.immigration;
+				d.jobs = +d.jobs;
+				d.china = +d.china;
+			});
+
+			// keys = top 6 topics by total volume
+			const keys = [
+				"race",
+				"healthcare",
+				"climate",
+				"immigration",
+				"jobs",
+				"china",
+			];
+
+			// stack layout
+			const series = stack()
+				.keys(keys)
+				.order(stackOrderNone) // keep input order
+				.offset(stackOffsetNone)(
+				// stacked on zero baseline
+				rawData
+			);
+
+			//scales
+			const xScale = scaleTime()
+				.domain(extent(rawData, (d) => d.date))
+				.range([0, width]);
+
+			// compute max Y by finding the highest "stacked" value
+			const yMax = max(series, (layer) => max(layer, (d) => d[1]));
+
+			const yScale = scaleLinear()
+				.domain([0, yMax])
+				.nice()
+				.range([height, 0]);
+
+			// use a categorical palette
+			const color = scaleOrdinal().domain(keys).range(schemeCategory10);
+
+			// area generator
+			const areaGenerator = area()
+				.x((d) => xScale(d.data.date))
+				.y0((d) => yScale(d[0]))
+				.y1((d) => yScale(d[1]));
+
+			// draw stacked areas
+			const layers = svg
+				.selectAll(".layer")
+				.data(series)
+				.enter()
+				.append("path")
+				.attr("class", "layer")
+				.attr("d", areaGenerator)
+				.attr("fill", (d) => color(d.key))
+				.attr("stroke", "none");
+
+			// draw axes
+			// x-axis
+			svg.append("g")
+				.attr("class", "axis x-axis")
+				.attr("transform", `translate(0, ${height})`)
+				.call(axisBottom(xScale).ticks(8).tickSizeOuter(0));
+
+			// y-axis
+			svg.append("g")
+				.attr("class", "axis y-axis")
+				.call(axisLeft(yScale).ticks(6).tickSizeOuter(0));
+
+			// add axis labels
+			svg.append("text")
+				.attr("x", width / 2)
+				.attr("y", height + 35)
+				.attr("text-anchor", "middle")
+				.attr("font-size", 12)
+				.text("Date");
+
+			svg.append("text")
+				.attr("transform", "rotate(-90)")
+				.attr("x", -height / 2)
+				.attr("y", -40)
+				.attr("text-anchor", "middle")
+				.attr("font-size", 12)
+				.text("Number of Articles");
+
+			// add legend
+			const legend = svg
+				.append("g")
+				.attr("class", "legend")
+				.attr("transform", `translate(${width + 20}, 0)`);
+
+			keys.forEach((key, i) => {
+				const legendRow = legend
+					.append("g")
+					.attr("class", "legend-item")
+					.attr("transform", `translate(0, ${i * 20})`)
+					.on("click", () => toggleTopic(key));
+
+				// color box
+				legendRow
+					.append("rect")
+					.attr("class", "legend-color-box")
+					.attr("width", 12)
+					.attr("height", 12)
+					.attr("fill", color(key));
+
+				// text label
+				legendRow
+					.append("text")
+					.attr("class", "legend-text")
+					.attr("x", 18)
+					.attr("y", 10)
+					.attr("font-size", 12)
+					.text(key);
+			});
+
+			// keep track of which topics are visible
+			const visibleTopics = new Set(keys.reverse());
+
+			// toggle function (show/hide topic on click)
+			function toggleTopic(topic) {
+				if (visibleTopics.has(topic)) {
+					visibleTopics.delete(topic);
+				} else {
+					visibleTopics.add(topic);
+				}
+				updateChart();
+			}
+
+			// update chart based on visibleTopics
+			function updateChart() {
+				// filter keys
+				const filteredKeys = keys.filter((k) => visibleTopics.has(k));
+
+				// recompute stack with only filtered topics
+				const newSeries = stack()
+					.keys(filteredKeys)
+					.order(stackOrderNone)
+					.offset(stackOffsetNone)(rawData);
+
+				// recompute new yMax
+				const newYMax = max(newSeries, (layer) =>
+					max(layer, (d) => d[1])
+				);
+
+				// update yScale
+				yScale.domain([0, newYMax]).nice();
+
+				// rebind data to paths
+				const updatedLayers = svg
+					.selectAll(".layer")
+					.data(newSeries, (d) => d.key);
+
+				// remove old layers
+				updatedLayers.exit().remove();
+
+				// add new layers
+				updatedLayers
+					.enter()
+					.append("path")
+					.attr("class", "layer")
+					.attr("fill", (d) => color(d.key))
+					.merge(updatedLayers) // update existing + new
+					.transition()
+					.duration(500)
+					.attr("d", areaGenerator);
+
+				// update y-axis
+				svg.select(".y-axis")
+					.transition()
+					.duration(500)
+					.call(axisLeft(yScale).ticks(6).tickSizeOuter(0));
+			}
+
+			// tooltip
+			const tooltip = select("#tooltip");
+
+			svg.selectAll(".layer")
+				.on("mousemove", function (event, d) {
+					// d is the series for a single topic
+					const [mx, my] = pointer(event); // mouse coordinates relative to svg
+
+					// find the closest data point by x (date)
+					const x0 = xScale.invert(mx);
+					const bisectDate = (arr, xVal) => {
+						let lo = 0,
+							hi = arr.length - 1;
+						while (lo < hi) {
+							const mid = Math.floor((lo + hi) / 2);
+							if (arr[mid].data.date < xVal) lo = mid + 1;
+							else hi = mid;
+						}
+						return lo;
+					};
+					const idx = bisectDate(series[0], x0);
+					const point = d[idx];
+
+					// calculate actual count for this topic at that date
+					const actualCount = point.data[d.key];
+
+					// show tooltip
+					tooltip
+						.style("opacity", 1)
+						.html(
+							`
+            <strong>topic:</strong> ${d.key}<br/>
+            <strong>date:</strong> ${point.data.date.toLocaleDateString()}<br/>
+            <strong>count:</strong> ${actualCount}
+          `
+						)
+						.style("left", event.pageX + 15 + "px")
+						.style("top", event.pageY - 28 + "px");
+				})
+				.on("mouseout", () => {
+					tooltip.style("opacity", 0);
+				});
+
+			// initial draw
+			updateChart();
+		</script>
+	</body>
+</html>

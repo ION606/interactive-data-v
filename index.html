@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Interactive Data Visualization - Project Hub</title>
+		<style>
+			body {
+				font-family: sans-serif;
+				margin: 30px;
+				background: #f8f9fa;
+			}
+			.header {
+				margin-bottom: 30px;
+			}
+			.header h1 {
+				margin: 0 0 10px 0;
+			}
+			.header p {
+				margin: 0 0 5px 0;
+				color: #555;
+			}
+			.tabs {
+				display: flex;
+				border-bottom: 2px solid #ddd;
+				margin-bottom: 20px;
+			}
+			.tab {
+				padding: 12px 28px;
+				cursor: pointer;
+				background: #eee;
+				border: none;
+				outline: none;
+				font-size: 16px;
+				border-top-left-radius: 6px;
+				border-top-right-radius: 6px;
+				margin-right: 2px;
+				transition: background 0.2s;
+			}
+			.tab.active {
+				background: #fff;
+				border-bottom: 2px solid #fff;
+				font-weight: bold;
+			}
+			.tab-content {
+				background: #fff;
+				border: 1px solid #ddd;
+				border-top: none;
+				padding: 24px;
+				min-height: 480px;
+				border-radius: 0 0 8px 8px;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+			}
+			iframe,
+			embed {
+				width: 100%;
+				min-height: 500px;
+				border: none;
+			}
+			.md-viewer {
+				white-space: pre-wrap;
+				font-family: "Fira Mono", "Consolas", monospace;
+				background: #f6f8fa;
+				padding: 18px;
+				border-radius: 6px;
+				font-size: 15px;
+				color: #222;
+				overflow-x: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="header">
+			<h1>Interactive Data Visualization Project Hub</h1>
+			<p><strong>Name:</strong> Itamar Oren-Naftalovich</p>
+			<p>
+				<strong>Class:</strong> COMM-6880 Interactive Data Visualization
+			</p>
+		</div>
+		<div class="tabs">
+			<button class="tab active" data-tab="chart">Chart</button>
+			<button class="tab" data-tab="pptx">Presentation</button>
+			<button class="tab" data-tab="paper">Paper</button>
+		</div>
+		<div class="tab-content" id="tab-content">
+			<!-- Chart tab loads by default -->
+			<iframe src="chart1.html"></iframe>
+		</div>
+		<script>
+			const tabs = document.querySelectorAll(".tab");
+			const tabContent = document.getElementById("tab-content");
+
+			function setActiveTab(tabName) {
+				tabs.forEach((tab) => tab.classList.remove("active"));
+				document
+					.querySelector(`.tab[data-tab="${tabName}"]`)
+					.classList.add("active");
+				if (tabName === "chart") {
+					tabContent.innerHTML = `<iframe src="chart1.html"></iframe>`;
+				} else if (tabName === "pptx") {
+					tabContent.innerHTML = `
+                        <p>
+                            <a href="Interactive Data Visualization Part I.pptx" download>
+                                Download Presentation (PPTX)
+                            </a>
+                        </p>
+                        <iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
+							window.location.origin +
+								"/Interactive Data Visualization Part I.pptx"
+						)}" style="min-height:600px"></iframe>
+                        <p style="font-size:13px;color:#888;">If the embedded viewer does not load, <a href="Interactive Data Visualization Part I.pptx" download>download the PPTX</a>.</p>
+                    `;
+				} else if (tabName === "paper") {
+					fetch("paper_part_1.md")
+						.then((res) => res.text())
+						.then((md) => {
+							// Use a simple Markdown-to-HTML converter for formatting
+							tabContent.innerHTML = `<div class="md-viewer">${marked.parse(
+								md
+							)}</div>`;
+						})
+						.catch(() => {
+							tabContent.innerHTML = `<p>Unable to load paper_part_1.md.</p>`;
+						});
+				}
+			}
+
+			tabs.forEach((tab) => {
+				tab.addEventListener("click", () =>
+					setActiveTab(tab.dataset.tab)
+				);
+			});
+
+			// Load marked.js for markdown rendering
+			const script = document.createElement("script");
+			script.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
+			document.body.appendChild(script);
+		</script>
+	</body>
+</html>
