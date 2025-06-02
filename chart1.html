@@ -2,8 +2,9 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<title>Redesigned 2020 Agenda Chart</title>
+		<title>Redesigned 2020 Agenda Chart (Multi-Line)</title>
 		<style>
+			/* basic styles for the chart container */
 			#chart {
 				font-family: sans-serif;
 				margin: 20px;
@@ -12,6 +13,11 @@
 			.axis path,
 			.axis line {
 				stroke: #ccc;
+			}
+
+			.line {
+				fill: none;
+				stroke-width: 1.5px;
 			}
 
 			.tooltip {
@@ -23,6 +29,7 @@
 				pointer-events: none;
 				border-radius: 3px;
 				box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+				opacity: 0;
 			}
 
 			.legend-item {
@@ -44,11 +51,8 @@
 		</style>
 	</head>
 	<body>
-		<!-- container for the SVG -->
 		<div id="chart"></div>
-
-		<!-- tooltip div (initially hidden) -->
-		<div id="tooltip" class="tooltip" style="opacity: 0"></div>
+		<div id="tooltip" class="tooltip"></div>
 
 		<script type="module">
 			import {
@@ -58,23 +62,22 @@
 				scaleOrdinal,
 				axisBottom,
 				axisLeft,
-				stack,
-				area,
-				stackOrderNone,
-				stackOffsetNone,
-				schemeCategory10,
+				line,
+				curveMonotoneX,
 				timeParse,
-				max,
 				extent,
+				max,
 				pointer,
+				format,
+				schemeCategory10,
 			} from "https://cdn.skypack.dev/d3@7";
 
-			//set up dimensions
-			const margin = { top: 20, right: 180, bottom: 40, left: 50 },
+			// set up margins and dimensions
+			const margin = { top: 20, right: 180, bottom: 60, left: 50 },
 				width = 900 - margin.left - margin.right,
 				height = 500 - margin.top - margin.bottom;
 
-			//create SVG
+			// create svg container
 			const svg = select("#chart")
 				.append("svg")
 				.attr("width", width + margin.left + margin.right)
@@ -82,174 +85,273 @@
 				.append("g")
 				.attr("transform", `translate(${margin.left},${margin.top})`);
 
+			// ─────────── same raw data ───────────
 			const rawData = [
-				// date format is "YYYY-MM-DD"
 				{
 					date: "2019-03-01",
-					race: 30,
-					healthcare: 20,
-					climate: 15,
-					immigration: 10,
-					jobs: 5,
-					china: 8,
+					"big tech": 15,
+					Beto: 20,
+					"LGBTQ+": 20,
+					"inappropriate touching": 25,
+					China: 10,
+					jobs: 8,
+					"reproductive rights": 12,
+					taxes: 10,
+					debates: 5,
+					"criminal justice": 7,
+					race: 8,
+					horserace: 5,
+					"health care": 10,
+					Trump: 12,
+					guns: 10,
+					poverty: 0,
+					immigration: 3,
+					climate: 5,
+					Ukraine: 0,
+					impeachment: 0,
 				},
 				{
-					date: "2019-03-08",
-					race: 35,
-					healthcare: 25,
-					climate: 18,
-					immigration: 12,
-					jobs: 7,
-					china: 10,
-				},
-				{
-					date: "2019-03-15",
-					race: 40,
-					healthcare: 22,
-					climate: 20,
-					immigration: 15,
-					jobs: 6,
-					china: 12,
-				},
-				{
-					date: "2019-03-22",
-					race: 38,
-					healthcare: 28,
-					climate: 22,
-					immigration: 18,
-					jobs: 9,
-					china: 14,
-				},
-				{
-					date: "2019-03-29",
-					race: 45,
-					healthcare: 30,
-					climate: 25,
-					immigration: 20,
-					jobs: 11,
-					china: 18,
-				},
-				{
-					date: "2019-04-05",
-					race: 50,
-					healthcare: 35,
-					climate: 28,
-					immigration: 22,
+					date: "2019-04-01",
+					"big tech": 10,
+					Beto: 25,
+					"LGBTQ+": 15,
+					"inappropriate touching": 35,
+					China: 30,
 					jobs: 12,
-					china: 20,
+					"reproductive rights": 18,
+					taxes: 15,
+					debates: 8,
+					"criminal justice": 10,
+					race: 12,
+					horserace: 8,
+					"health care": 15,
+					Trump: 15,
+					guns: 12,
+					poverty: 5,
+					immigration: 5,
+					climate: 8,
+					Ukraine: 0,
+					impeachment: 0,
+				},
+				{
+					date: "2019-05-01",
+					"big tech": 8,
+					Beto: 15,
+					"LGBTQ+": 10,
+					"inappropriate touching": 20,
+					China: 25,
+					jobs: 20,
+					"reproductive rights": 25,
+					taxes: 10,
+					debates: 10,
+					"criminal justice": 12,
+					race: 15,
+					horserace: 10,
+					"health care": 20,
+					Trump: 20,
+					guns: 15,
+					poverty: 8,
+					immigration: 8,
+					climate: 10,
+					Ukraine: 5,
+					impeachment: 0,
+				},
+				{
+					date: "2019-06-01",
+					"big tech": 5,
+					Beto: 10,
+					"LGBTQ+": 8,
+					"inappropriate touching": 15,
+					China: 20,
+					jobs: 15,
+					"reproductive rights": 22,
+					taxes: 20,
+					debates: 15,
+					"criminal justice": 15,
+					race: 15,
+					horserace: 12,
+					"health care": 30,
+					Trump: 25,
+					guns: 20,
+					poverty: 10,
+					immigration: 10,
+					climate: 15,
+					Ukraine: 8,
+					impeachment: 5,
+				},
+				{
+					date: "2019-07-01",
+					"big tech": 5,
+					Beto: 8,
+					"LGBTQ+": 7,
+					"inappropriate touching": 10,
+					China: 15,
+					jobs: 10,
+					"reproductive rights": 20,
+					taxes: 25,
+					debates: 40,
+					"criminal justice": 30,
+					race: 50,
+					horserace: 45,
+					"health care": 35,
+					Trump: 30,
+					guns: 30,
+					poverty: 15,
+					immigration: 15,
+					climate: 20,
+					Ukraine: 10,
+					impeachment: 10,
+				},
+				{
+					date: "2019-08-01",
+					"big tech": 7,
+					Beto: 10,
+					"LGBTQ+": 6,
+					"inappropriate touching": 8,
+					China: 10,
+					jobs: 10,
+					"reproductive rights": 15,
+					taxes: 15,
+					debates: 20,
+					"criminal justice": 20,
+					race: 35,
+					horserace: 25,
+					"health care": 55,
+					Trump: 45,
+					guns: 40,
+					poverty: 50,
+					immigration: 40,
+					climate: 30,
+					Ukraine: 25,
+					impeachment: 15,
 				},
 				{
 					date: "2019-09-01",
-					race: 70,
-					healthcare: 50,
-					climate: 40,
+					"big tech": 6,
+					Beto: 5,
+					"LGBTQ+": 5,
+					"inappropriate touching": 5,
+					China: 5,
+					jobs: 8,
+					"reproductive rights": 12,
+					taxes: 10,
+					debates: 10,
+					"criminal justice": 15,
+					race: 20,
+					horserace: 12,
+					"health care": 40,
+					Trump: 35,
+					guns: 30,
+					poverty: 30,
 					immigration: 35,
-					jobs: 20,
-					china: 25,
+					climate: 40,
+					Ukraine: 45,
+					impeachment: 25,
 				},
-				{
-					date: "2019-09-08",
-					race: 65,
-					healthcare: 55,
-					climate: 45,
-					immigration: 38,
-					jobs: 22,
-					china: 30,
-				},
-				{
-					date: "2019-09-15",
-					race: 68,
-					healthcare: 52,
-					climate: 48,
-					immigration: 40,
-					jobs: 25,
-					china: 32,
-				},
-				// (etc.)
 			];
 
-			// parse dates and cast values
+			// parse date strings into Date objects and cast values to numbers
 			const parseDate = timeParse("%Y-%m-%d");
-
 			rawData.forEach((d) => {
 				d.date = parseDate(d.date);
-				// cast each topic count to number
-				d.race = +d.race;
-				d.healthcare = +d.healthcare;
-				d.climate = +d.climate;
-				d.immigration = +d.immigration;
-				d.jobs = +d.jobs;
-				d.china = +d.china;
+				Object.keys(d).forEach((key) => {
+					if (key !== "date") {
+						d[key] = +d[key];
+					}
+				});
 			});
 
-			// keys = top 6 topics by total volume
+			// list all topics (keys) exactly as in rawData
 			const keys = [
-				"race",
-				"healthcare",
-				"climate",
-				"immigration",
+				"big tech",
+				"Beto",
+				"LGBTQ+",
+				"inappropriate touching",
+				"China",
 				"jobs",
-				"china",
+				"reproductive rights",
+				"taxes",
+				"debates",
+				"criminal justice",
+				"race",
+				"horserace",
+				"health care",
+				"Trump",
+				"guns",
+				"poverty",
+				"immigration",
+				"climate",
+				"Ukraine",
+				"impeachment",
 			];
 
-			// stack layout
-			const series = stack()
-				.keys(keys)
-				.order(stackOrderNone) // keep input order
-				.offset(stackOffsetNone)(
-				// stacked on zero baseline
-				rawData
-			);
+			// transform rawData into an array of objects, one per topic, each with array of {date, value}
+			const topicData = keys.map((key) => {
+				return {
+					key,
+					values: rawData.map((d) => ({
+						date: d.date,
+						value: d[key],
+					})),
+				};
+			});
 
-			//scales
+			// xScale: time scale over the full date extent
 			const xScale = scaleTime()
 				.domain(extent(rawData, (d) => d.date))
 				.range([0, width]);
 
-			// compute max Y by finding the highest "stacked" value
-			const yMax = max(series, (layer) => max(layer, (d) => d[1]));
-
+			// yScale: from 0 up to the maximum single-topic value across all dates
+			const yMax = max(topicData, (t) => max(t.values, (v) => v.value));
 			const yScale = scaleLinear()
 				.domain([0, yMax])
 				.nice()
 				.range([height, 0]);
 
-			// use a categorical palette
+			// color palette (one distinct color per topic)
 			const color = scaleOrdinal().domain(keys).range(schemeCategory10);
 
-			// area generator
-			const areaGenerator = area()
-				.x((d) => xScale(d.data.date))
-				.y0((d) => yScale(d[0]))
-				.y1((d) => yScale(d[1]));
+			// line generator (smooth curve)
+			const lineGenerator = line()
+				.x((d) => xScale(d.date))
+				.y((d) => yScale(d.value))
+				.curve(curveMonotoneX);
 
-			// draw stacked areas
-			const layers = svg
-				.selectAll(".layer")
-				.data(series)
+			// draw one <path> per topic
+			const linesGroup = svg.append("g").attr("class", "lines");
+
+			linesGroup
+				.selectAll(".line-path")
+				.data(topicData)
 				.enter()
 				.append("path")
-				.attr("class", "layer")
-				.attr("d", areaGenerator)
-				.attr("fill", (d) => color(d.key))
-				.attr("stroke", "none");
+				.attr("class", "line")
+				.attr("d", (d) => lineGenerator(d.values))
+				.attr("stroke", (d) => color(d.key))
+				.attr("data-key", (d) => d.key);
 
-			// draw axes
-			// x-axis
+			// draw x-axis
 			svg.append("g")
 				.attr("class", "axis x-axis")
 				.attr("transform", `translate(0, ${height})`)
-				.call(axisBottom(xScale).ticks(8).tickSizeOuter(0));
+				.call(
+					axisBottom(xScale).tickFormat((d) =>
+						d.toLocaleDateString(undefined, {
+							month: "short",
+							year: "numeric",
+						})
+					)
+				);
 
-			// y-axis
+			// draw y-axis
 			svg.append("g")
 				.attr("class", "axis y-axis")
-				.call(axisLeft(yScale).ticks(6).tickSizeOuter(0));
+				.call(axisLeft(yScale).ticks(6).tickFormat(format("~s")));
 
-			// add axis labels
+			// axis labels
 			svg.append("text")
 				.attr("x", width / 2)
-				.attr("y", height + 35)
+				.attr("y", height + 50)
 				.attr("text-anchor", "middle")
 				.attr("font-size", 12)
 				.text("Date");
@@ -262,7 +364,7 @@
 				.attr("font-size", 12)
 				.text("Number of Articles");
 
-			// add legend
+			// draw legend on the right
 			const legend = svg
 				.append("g")
 				.attr("class", "legend")
@@ -275,7 +377,7 @@
 					.attr("transform", `translate(0, ${i * 20})`)
 					.on("click", () => toggleTopic(key));
 
-				// color box
+				// colored box
 				legendRow
 					.append("rect")
 					.attr("class", "legend-color-box")
@@ -283,7 +385,7 @@
 					.attr("height", 12)
 					.attr("fill", color(key));
 
-				// text label
+				// label text
 				legendRow
 					.append("text")
 					.attr("class", "legend-text")
@@ -294,108 +396,120 @@
 			});
 
 			// keep track of which topics are visible
-			const visibleTopics = new Set(keys.reverse());
+			const visibleTopics = new Set(keys);
 
-			// toggle function (show/hide topic on click)
+			// toggle function: show or hide a topic line on legend click
 			function toggleTopic(topic) {
 				if (visibleTopics.has(topic)) {
 					visibleTopics.delete(topic);
 				} else {
 					visibleTopics.add(topic);
 				}
-				updateChart();
+				updateLines();
 			}
 
-			// update chart based on visibleTopics
-			function updateChart() {
-				// filter keys
-				const filteredKeys = keys.filter((k) => visibleTopics.has(k));
-
-				// recompute stack with only filtered topics
-				const newSeries = stack()
-					.keys(filteredKeys)
-					.order(stackOrderNone)
-					.offset(stackOffsetNone)(rawData);
-
-				// recompute new yMax
-				const newYMax = max(newSeries, (layer) =>
-					max(layer, (d) => d[1])
+			// updateLines: redraws just the visible lines
+			function updateLines() {
+				const filteredData = topicData.filter((t) =>
+					visibleTopics.has(t.key)
 				);
 
-				// update yScale
-				yScale.domain([0, newYMax]).nice();
+				// update yScale domain if needed (optional: keep static)
+				// const newYMax = max(filteredData, (t) => max(t.values, (v) => v.value));
+				// yScale.domain([0, newYMax]).nice();
+				// svg.select(".y-axis").transition().duration(500).call(axisLeft(yScale).ticks(6).tickFormat(format("~s")));
 
-				// rebind data to paths
-				const updatedLayers = svg
-					.selectAll(".layer")
-					.data(newSeries, (d) => d.key);
+				// bind filtered data
+				const paths = linesGroup
+					.selectAll(".line-path")
+					.data(filteredData, (d) => d.key);
 
-				// remove old layers
-				updatedLayers.exit().remove();
+				// remove paths for hidden topics
+				paths.exit().remove();
 
-				// add new layers
-				updatedLayers
+				// add new paths for newly visible topics
+				paths
 					.enter()
 					.append("path")
-					.attr("class", "layer")
-					.attr("fill", (d) => color(d.key))
-					.merge(updatedLayers) // update existing + new
-					.transition()
-					.duration(500)
-					.attr("d", areaGenerator);
+					.attr("class", "line line-path")
+					.attr("d", (d) => lineGenerator(d.values))
+					.attr("stroke", (d) => color(d.key))
+					.attr("data-key", (d) => d.key);
 
-				// update y-axis
-				svg.select(".y-axis")
-					.transition()
-					.duration(500)
-					.call(axisLeft(yScale).ticks(6).tickSizeOuter(0));
+				// update existing paths
+				paths
+					.attr("d", (d) => lineGenerator(d.values))
+					.attr("stroke", (d) => color(d.key));
 			}
 
-			// tooltip
-			const tooltip = select("#tooltip");
+			// tooltip behavior: show value on hover at points
+			// append a transparent rect to capture mouse events
+			svg.append("rect")
+				.attr("class", "overlay")
+				.attr("width", width)
+				.attr("height", height)
+				.style("fill", "none")
+				.style("pointer-events", "all")
+				.on("mousemove", handleMousemove)
+				.on("mouseout", () => {
+					select("#tooltip").style("opacity", 0);
+				});
 
-			svg.selectAll(".layer")
-				.on("mousemove", function (event, d) {
-					// d is the series for a single topic
-					const [mx, my] = pointer(event); // mouse coordinates relative to svg
+			function handleMousemove(event) {
+				const [mx, my] = pointer(event);
+				// find the closest date by x-coordinate
+				const x0 = xScale.invert(mx);
 
-					// find the closest data point by x (date)
-					const x0 = xScale.invert(mx);
-					const bisectDate = (arr, xVal) => {
-						let lo = 0,
-							hi = arr.length - 1;
-						while (lo < hi) {
-							const mid = Math.floor((lo + hi) / 2);
-							if (arr[mid].data.date < xVal) lo = mid + 1;
-							else hi = mid;
+				// for each visible topic, find the closest point
+				let nearest = null;
+				topicData.forEach((t) => {
+					if (!visibleTopics.has(t.key)) return;
+					// binary search or simple linear search since dataset is small
+					for (let i = 0; i < t.values.length; i++) {
+						const d = t.values[i];
+						if (
+							i === t.values.length - 1 ||
+							(d.date <= x0 && t.values[i + 1].date > x0)
+						) {
+							// choose between d and next based on which is closer
+							const d1 = d;
+							const d2 = t.values[i + 1] || d;
+							const chosen =
+								Math.abs(d1.date - x0) < Math.abs(d2.date - x0)
+									? d1
+									: d2;
+							const dist = Math.hypot(
+								mx - xScale(chosen.date),
+								my - yScale(chosen.value)
+							);
+							if (!nearest || dist < nearest.dist) {
+								nearest = { topic: t.key, data: chosen, dist };
+							}
+							break;
 						}
-						return lo;
-					};
-					const idx = bisectDate(series[0], x0);
-					const point = d[idx];
+					}
+				});
 
-					// calculate actual count for this topic at that date
-					const actualCount = point.data[d.key];
-
-					// show tooltip
+				if (nearest) {
+					const tooltip = select("#tooltip");
+					const month = nearest.data.date.toLocaleDateString(
+						undefined,
+						{
+							month: "short",
+							year: "numeric",
+						}
+					);
 					tooltip
 						.style("opacity", 1)
 						.html(
-							`
-            <strong>topic:</strong> ${d.key}<br/>
-            <strong>date:</strong> ${point.data.date.toLocaleDateString()}<br/>
-            <strong>count:</strong> ${actualCount}
-          `
+							`<strong>topic:</strong> ${nearest.topic}<br/>
+             <strong>date:</strong> ${month}<br/>
+             <strong>count:</strong> ${nearest.data.value}`
 						)
 						.style("left", event.pageX + 15 + "px")
 						.style("top", event.pageY - 28 + "px");
-				})
-				.on("mouseout", () => {
-					tooltip.style("opacity", 0);
-				});
-
-			// initial draw
-			updateChart();
+				}
+			}
 		</script>
 	</body>
 </html>
