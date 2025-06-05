@@ -66,6 +66,21 @@
 				color: #222;
 				overflow-x: auto;
 			}
+			.btn {
+				padding: 12px 28px;
+				cursor: pointer;
+				background: #eee;
+				border: none;
+				outline: none;
+				font-size: 16px;
+				border-top-left-radius: 6px;
+				border-top-right-radius: 6px;
+				margin-right: 2px;
+				transition: background 0.2s;
+			}
+			.btn:hover {
+				background: #ddd;
+			}
 		</style>
 	</head>
 	<body>
@@ -82,6 +97,11 @@
 			</button>
 			<button class="tab" data-tab="pptx">Presentation Part I</button>
 			<button class="tab" data-tab="paper">Paper Part I</button>
+			<button
+				onclick="window.location.pathname = 'part2_graphs.html'"
+				class="btn">
+				⎘ Paper Part II
+			</button>
 		</div>
 		<div class="tab-content" id="tab-content">
 			<!-- Chart tab loads by default -->

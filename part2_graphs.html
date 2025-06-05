@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>kubernetes collaboration – prototype v3</title>
+
+		<script
+			src="https://cdn.plot.ly/plotly-3.0.1.min.js"
+			charset="utf-8"></script>
+		<script type="module" src="./part2_graphs.js"></script>
+
+		<!-- styles (trimmed) -->
+		<style>
+			body {
+				margin: 0;
+				font-family: system-ui, sans-serif;
+				background: #0f172a;
+				color: #f1f5f9;
+				display: flex;
+				min-height: 100vh;
+			}
+			aside {
+				width: 260px;
+				background: #1e293b;
+				padding: 1rem;
+				box-shadow: 2px 0 6px #0008;
+			}
+			main {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+			}
+			header {
+				padding: 1rem;
+				border-bottom: 1px solid #334155;
+				display: flex;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+				align-items: center;
+			}
+			#page-tabs button {
+				all: unset;
+				cursor: pointer;
+				padding: 0.25rem 0.75rem;
+				border-radius: 0.5rem;
+				background: #334155;
+				margin-right: 0.25rem;
+				font-size: 0.875rem;
+			}
+			#page-tabs button.active {
+				background: #6366f1;
+				color: #fff;
+			}
+			section {
+				padding: 1rem;
+				display: none;
+				height: 70%;
+			}
+			section.active {
+				display: block;
+			}
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+				gap: 1.25rem;
+			}
+			.card {
+				background: #1e293b;
+				padding: 1rem;
+				border-radius: 0.75rem;
+				box-shadow: 0 2px 6px #0006;
+				height: max-content;
+				width: calc(100% - 2rem);
+			}
+			.card h2 {
+				margin: 0.25rem 0 0;
+				text-align: center;
+				font-size: 1rem;
+			}
+			.view-tabs {
+				display: flex;
+				justify-content: center;
+				gap: 0.25rem;
+				margin: 0.5rem 0 0.75rem;
+			}
+			.view-tabs button {
+				all: unset;
+				cursor: pointer;
+				padding: 0.25rem 0.5rem;
+				border-radius: 0.5rem;
+				background: #334155;
+				font-size: 0.75rem;
+				text-transform: uppercase;
+			}
+			.view-tabs button.active {
+				background: #4f46e5;
+				color: #fff;
+			}
+			.graph {
+				height: 320px;
+				/* ensure the svg fully fills its container */
+				position: relative;
+			}
+			.hidden {
+				display: none;
+			}
+
+			/* new: make SVG fill the .graph card */
+			#centrality-network {
+				width: 95%;
+				height: 90%;
+			}
+			#centrality-network svg {
+				width: 100%;
+				height: 100%;
+			}
+			.svg-container {
+				margin: auto !important;
+			}
+
+			.bar-tooltip {
+				transition: opacity 0.2s;
+				z-index: 1000;
+			}
+
+			text {
+				color: white !important;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!-- —— main dashboard —— -->
+		<main>
+			<header>
+				<strong style="font-size: 1.25rem; flex: 1">
+					Kubernetes Collaboration!
+				</strong>
+				<i>Itamar Oren-Naftalovich</i>
+			</header>
+
+			<nav id="page-tabs" style="margin: 1rem">
+				<button class="active" data-role="centrality">
+					Network Centrality
+				</button>
+				<button data-role="ladder">Ladder Flow</button>
+				<button data-role="diversity">Regional Diversity</button>
+
+				<button
+					onclick="window.location.pathname = '/'"
+					class="btn"
+					style="float: right">
+					Home
+				</button>
+			</nav>
+
+			<!-- One section per page, each with both graph variants stacked vertically -->
+			<section data-role="centrality" class="active">
+				<div class="card" style="height: 100%">
+					<h2>network centrality</h2>
+					<div id="centrality-network" class="graph"></div>
+				</div>
+
+				<div class="card">
+					<h2>centrality scores – ranked bars</h2>
+					<div id="centrality-bars" class="graph"></div>
+				</div>
+			</section>
+
+			<section data-role="ladder">
+				<div class="card">
+					<h2>ladder flow – line</h2>
+					<div id="ladder-line" class="graph"></div>
+				</div>
+				<div class="card">
+					<h2>ladder flow – area</h2>
+					<div id="ladder-area" class="graph"></div>
+				</div>
+			</section>
+
+			<section data-role="diversity">
+				<div class="card">
+					<h2>regional diversity – bars</h2>
+					<div id="diversity-bars" class="graph"></div>
+				</div>
+				<div class="card">
+					<h2>regional diversity – area</h2>
+					<div id="diversity-area" class="graph"></div>
+				</div>
+			</section>
+		</main>
+
+		<!-- es-module entry -->
+		<script type="module" src="./script.js"></script>
+	</body>
+</html>
