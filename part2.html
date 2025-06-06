@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>kubernetes collaboration – prototype v3</title>
+
+		<script
+			src="https://cdn.plot.ly/plotly-3.0.1.min.js"
+			charset="utf-8"></script>
+		<script type="module" src="./part2_graphs.js"></script>
+
+		<link rel="stylesheet" href="part2.css" />
+	</head>
+
+	<body>
+		<!-- —— main dashboard —— -->
+		<main>
+			<header>
+				<strong style="font-size: 1.25rem; flex: 1">
+					Kubernetes Collaboration!
+				</strong>
+				<i>Itamar Oren-Naftalovich</i>
+			</header>
+
+			<nav id="page-tabs" style="margin: 1rem">
+				<button class="active" data-role="home">Home</button>
+				<button data-role="centrality">Network Centrality</button>
+				<button data-role="ladder">Ladder Flow</button>
+				<button data-role="diversity">Regional Diversity</button>
+			</nav>
+
+			<!-- Home Section with 4 cards -->
+			<section data-role="home" class="active">
+				<div class="grid">
+					<div
+						class="card"
+						style="cursor: pointer"
+						onclick="switchTab('centrality')">
+						<h2>Network Centrality</h2>
+						<p>
+							Visualizes the collaboration network of contributors
+							and maintainers.<br />
+							<b>Includes:</b> Force-directed network and ranked
+							centrality bar chart.<br />
+						</p>
+					</div>
+					<div
+						class="card"
+						style="cursor: pointer"
+						onclick="switchTab('ladder')">
+						<h2>Ladder Flow</h2>
+						<p>
+							Shows contributor progression through the community
+							ladder.<br />
+							<b>Includes:</b> Line and area charts of role
+							transitions over time.<br />
+						</p>
+					</div>
+					<div
+						class="card"
+						style="cursor: pointer"
+						onclick="switchTab('diversity')">
+						<h2>Regional Diversity</h2>
+						<p>
+							Tracks geographic diversity of contributors.<br />
+							<b>Includes:</b> Grouped bar and stacked area charts
+							by region.<br />
+						</p>
+					</div>
+					<div
+						class="card"
+						style="cursor: pointer"
+						onclick="window.open('https://github.com/kubernetes/kubernetes','_blank')">
+						<h2>Kubernetes Main Repository</h2>
+						<p>
+							Official Kubernetes source code and
+							documentation.<br />
+							<b>GitHub:</b>
+							<a
+								href="https://github.com/kubernetes/kubernetes"
+								target="_blank"
+								style="color: #60a5fa"
+								>github.com/kubernetes/kubernetes</a
+							><br />
+						</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- One section per page, each with both graph variants stacked vertically -->
+			<section data-role="centrality">
+				<div class="card" style="height: 100%">
+					<h2>network centrality</h2>
+					<div id="centrality-network" class="graph"></div>
+				</div>
+
+				<div class="card">
+					<h2>centrality scores – ranked bars</h2>
+					<div id="centrality-bars" class="graph"></div>
+				</div>
+			</section>
+
+			<section data-role="ladder">
+				<div class="card">
+					<h2>ladder flow – line</h2>
+					<div id="ladder-line" class="graph"></div>
+				</div>
+				<div class="card">
+					<h2>ladder flow – area</h2>
+					<div id="ladder-area" class="graph"></div>
+				</div>
+			</section>
+
+			<section data-role="diversity">
+				<div class="card">
+					<h2>regional diversity – bars</h2>
+					<div id="diversity-bars" class="graph"></div>
+				</div>
+				<div class="card">
+					<h2>regional diversity – area</h2>
+					<div id="diversity-area" class="graph"></div>
+				</div>
+			</section>
+		</main>
+		<script>
+			// card switcher thing
+			function switchTab(tab) {
+				const tabs = document.querySelectorAll(
+					"#page-tabs button[data-role]"
+				);
+				const sections = document.querySelectorAll(
+					"main section[data-role]"
+				);
+				tabs.forEach((btn) => {
+					btn.classList.toggle(
+						"active",
+						btn.getAttribute("data-role") === tab
+					);
+				});
+				sections.forEach((sec) => {
+					sec.classList.toggle(
+						"active",
+						sec.getAttribute("data-role") === tab
+					);
+				});
+			}
+		</script>
+	</body>
+</html>

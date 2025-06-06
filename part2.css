@@ -1,0 +1,146 @@
+body {
+	margin: 0;
+	font-family: system-ui, sans-serif;
+	background: #0f172a;
+	color: #f1f5f9;
+	display: flex;
+	min-height: 100vh;
+}
+
+aside {
+	width: 260px;
+	background: #1e293b;
+	padding: 1rem;
+	box-shadow: 2px 0 6px #0008;
+}
+
+main {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+header {
+	padding: 1rem;
+	border-bottom: 1px solid #334155;
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+#page-tabs button {
+	all: unset;
+	cursor: pointer;
+	padding: 0.25rem 0.75rem;
+	border-radius: 0.5rem;
+	background: #334155;
+	margin-right: 0.25rem;
+	font-size: 0.875rem;
+}
+
+#page-tabs button.active {
+	background: #6366f1;
+	color: #fff;
+}
+
+section {
+	padding: 1rem;
+	display: none;
+	height: 70%;
+}
+
+section.active {
+	display: block;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+	gap: 1.25rem;
+}
+
+.card {
+	background: #1e293b;
+	padding: 1rem;
+	border-radius: 0.75rem;
+	box-shadow: 0 2px 6px #0006;
+	height: max-content;
+	width: calc(100% - 2rem);
+	transition:
+		transform 0.18s cubic-bezier(.4, 1.5, .5, 1),
+		box-shadow 0.18s cubic-bezier(.4, 1.5, .5, 1),
+		background 0.18s;
+}
+
+.card:hover,
+.card:focus-visible {
+	transform: translateY(-6px) scale(1.025);
+	box-shadow: 0 8px 24px #000a, 0 2px 6px #0006;
+	background: #273449;
+	z-index: 2;
+}
+
+.card h2 {
+	margin: 0.25rem 0 0;
+	text-align: center;
+	font-size: 1rem;
+}
+
+.view-tabs {
+	display: flex;
+	justify-content: center;
+	gap: 0.25rem;
+	margin: 0.5rem 0 0.75rem;
+}
+
+.view-tabs button {
+	all: unset;
+	cursor: pointer;
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.5rem;
+	background: #334155;
+	font-size: 0.75rem;
+	text-transform: uppercase;
+}
+
+.view-tabs button.active {
+	background: #4f46e5;
+	color: #fff;
+}
+
+.graph {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 320px;
+	position: relative;
+}
+
+.hidden {
+	display: none;
+}
+
+/* new: make SVG fill the .graph card */
+#centrality-network {
+	width: 95%;
+	height: 90%;
+}
+
+#centrality-network svg {
+	width: 100%;
+	height: 100%;
+}
+
+.svg-container {
+	margin: auto !important;
+}
+
+.bar-tooltip {
+	transition: opacity 0.2s;
+	z-index: 1000;
+}
+
+text {
+	color: white !important;
+}

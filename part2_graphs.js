@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	wireViewTabs();
 	wirePageTabs();
 	drawCentralityNetwork();
+
+	window.addEventListener('resize', drawCentralityNetwork)
 });
 
 // select the main elements for tab navigation
@@ -49,9 +51,12 @@ pageTabs.addEventListener('click', (evt) => {
 
 // function to draw a force-directed graph in #centrality-network
 function drawCentralityNetwork() {
-	// select the two div containers
 	const networkContainer = document.querySelector('#centrality-network'),
 		barsContainer = document.querySelector('#centrality-bars');
+
+	// Remove old SVGs if present
+	networkContainer.innerHTML = '';
+	barsContainer.innerHTML = '';
 
 	// dimensions for bar chart
 	const marginBars = { top: 20, right: 20, bottom: 40, left: 80 },
@@ -113,7 +118,7 @@ function drawCentralityNetwork() {
 	const simulation = forceSimulation(nodes)
 		.force('link', forceLink(links).id(d => d.id).distance(50).strength(0.1))
 		.force('charge', forceManyBody().strength(-100))
-		.force('center', forceCenter(networkContainer.clientWidth / 2, networkContainer.clientHeight / 2));
+		.force('center', forceCenter(window.innerWidth / 2, 320));
 
 	// draw links
 	const linkElements = svgNet
@@ -277,11 +282,7 @@ const centralityData = Array.from({ length: 45 }, (_, i) => ({
 		month: (i % 6) + 1,
 		region: ['na', 'eu', 'apac', 'latam'][Math.floor(i / 6)],
 		contributors: Math.floor(Math.random() * 140) + 20
-	})),
-	issueHeatData = [
-		{ sig: 'sig-01', severity: 'bug', count: 120 }, { sig: 'sig-01', severity: 'feature', count: 60 },
-		{ sig: 'sig-02', severity: 'bug', count: 90 }, { sig: 'sig-02', severity: 'feature', count: 70 }
-	];
+	}));
 
 /* chart initialisation */
 function initCharts() {
