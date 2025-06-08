@@ -2,8 +2,6 @@ import {
 	select,
 	scaleLinear,
 	scaleBand,
-	axisLeft,
-	axisBottom,
 	max,
 	forceSimulation,
 	forceLink,
@@ -46,6 +44,10 @@ pageTabs.addEventListener('click', (evt) => {
 				sec.classList.remove('active');
 			}
 		});
+		// Redraw network only when switching to centrality tab
+		if (selectedRole === 'centrality') {
+			drawCentralityNetwork();
+		}
 	}
 });
 
@@ -53,6 +55,16 @@ pageTabs.addEventListener('click', (evt) => {
 function drawCentralityNetwork() {
 	const networkContainer = document.querySelector('#centrality-network'),
 		barsContainer = document.querySelector('#centrality-bars');
+
+	// Only draw if container is visible
+	if (
+		!networkContainer.offsetParent ||
+		!barsContainer.offsetParent ||
+		barsContainer.clientWidth === 0 ||
+		barsContainer.clientHeight === 0
+	) {
+		return;
+	}
 
 	// Remove old SVGs if present
 	networkContainer.innerHTML = '';
@@ -63,11 +75,13 @@ function drawCentralityNetwork() {
 		widthBars = barsContainer.clientWidth - marginBars.left - marginBars.right,
 		heightBars = barsContainer.clientHeight - marginBars.top - marginBars.bottom;
 
+	console.log(barsContainer.clientWidth, barsContainer.clientHeight, widthBars, heightBars);
+
 	// create an svg for bar chart
 	const svgBars = select(barsContainer)
 		.append('svg')
-		.attr('width', widthBars + marginBars.left + marginBars.right)
-		.attr('height', heightBars + marginBars.top + marginBars.bottom)
+		.attr('width', barsContainer.clientWidth)
+		.attr('height', barsContainer.clientHeight)
 		.append('g')
 		.attr('transform', `translate(${marginBars.left},${marginBars.top})`);
 
@@ -80,14 +94,14 @@ function drawCentralityNetwork() {
 		.attr('transform', `translate(0, ${heightBars})`);
 	const yAxisGroup = svgBars.append('g');
 
-	// use centralityData for nodes, and generate links randomly for demo
+	// use centralityData for nodes, and generate links randomly
 	const nodes = centralityData.map((d, i) => ({
 		id: `node-${i + 1}`,
 		name: `Node ${i + 1}`,
 		centrality: d.centrality
 	}));
 
-	// generate some random links for demo purposes
+	// random links
 	const links = [];
 	for (let i = 0; i < nodes.length - 1; i++) {
 		links.push({
@@ -95,7 +109,7 @@ function drawCentralityNetwork() {
 			target: nodes[i + 1].id
 		});
 	}
-	// Optionally add a few more random links
+
 	for (let i = 0; i < 10; i++) {
 		const a = Math.floor(Math.random() * nodes.length);
 		const b = Math.floor(Math.random() * nodes.length);
@@ -255,14 +269,16 @@ function drawCentralityNetwork() {
 		.attr('x', widthBars / 2)
 		.attr('y', heightBars + marginBars.bottom - 5)
 		.attr('text-anchor', 'middle')
-		.text('node name');
+		.text('node name')
+		.attr('fill', '#fff');
 
 	svgBars.append('text')
 		.attr('transform', 'rotate(-90)')
 		.attr('x', -heightBars / 2)
 		.attr('y', -marginBars.left + 15)
 		.attr('text-anchor', 'middle')
-		.text('centrality');
+		.text('centrality')
+		.attr('fill', '#fff');
 }
 
 
@@ -290,7 +306,7 @@ function initCharts() {
 	Plotly.newPlot(
 		qs('#ladder-line'),
 		ladderFlowSeries('line'),
-		{ margin: { t: 40 }, xaxis: { title: 'month', dtick: 1 }, yaxis: { title: 'contributors' } },
+		{ margin: { t: 40 }, xaxis: { title: 'month', dtick: 1, color: '#fff' }, yaxis: { title: 'contributors', color: '#fff' } },
 		{ responsive: true }
 	);
 
@@ -299,8 +315,14 @@ function initCharts() {
 		ladderFlowSeries('area'),
 		{
 			margin: { t: 40 },
-			xaxis: { title: 'month', dtick: 1 },
-			yaxis: { title: 'contributors', stacked: true }
+			xaxis: { title: 'month', dtick: 1, color: '#fff' },
+			yaxis: { title: 'contributors', stacked: true, color: '#fff' },
+			legend: {
+				bgcolor: '#1e293b',
+				bordercolor: '#fff',
+				borderwidth: 1,
+				font: { color: '#fff', size: 14 }
+			}
 		},
 		{ responsive: true }
 	);
@@ -312,8 +334,8 @@ function initCharts() {
 		{
 			barmode: 'group',
 			margin: { t: 40 },
-			xaxis: { title: 'month', dtick: 1 },
-			yaxis: { title: 'contributors' }
+			xaxis: { title: 'month', dtick: 1, color: '#fff' },
+			yaxis: { title: 'contributors', color: '#fff' }
 		},
 		{ responsive: true }
 	);
@@ -323,8 +345,8 @@ function initCharts() {
 		diversitySeries('area'),
 		{
 			margin: { t: 40 },
-			xaxis: { title: 'month', dtick: 1 },
-			yaxis: { title: 'contributors', stacked: true }
+			xaxis: { title: 'month', dtick: 1, color: '#fff' },
+			yaxis: { title: 'contributors', stacked: true, color: '#fff' }
 		},
 		{ responsive: true }
 	);
@@ -332,13 +354,33 @@ function initCharts() {
 
 /* helpers ----------------------------------------------------------- */
 function ladderFlowSeries(style = 'line') {
+	const colors = {
+		outsider: '#60a5fa',   // blue
+		rising: '#f59e42',   // orange
+		core: '#34d399'    // green
+	};
 	return uniq(ladderFlowData.map(d => d.level)).map(level => ({
 		name: level,
 		x: ladderFlowData.filter(d => d.level === level).map(d => d.month),
 		y: ladderFlowData.filter(d => d.level === level).map(d => d.count),
 		type: 'scatter',
 		mode: 'lines+markers',
-		fill: style === 'area' ? 'tonexty' : undefined
+		fill: style === 'area' ? 'tonexty' : undefined,
+		line: {
+			color: colors[level],
+			width: 2
+		},
+		fillcolor: style === 'area'
+			? colors[level] + 'cc' // alpha --> transparency
+			: undefined,
+		marker: {
+			size: 10,
+			color: '#fff',
+			line: {
+				width: 2,
+				color: colors[level]
+			}
+		}
 	}));
 }
 
@@ -405,7 +447,6 @@ function wirePageTabs() {
 const qs = sel => document.querySelector(sel),
 	qsAll = sel => document.querySelectorAll(sel);
 
-// Change Plotly legend text color to white for all charts
 const origPlotlyNewPlot = Plotly.newPlot;
 Plotly.newPlot = function (container, data, layout = {}, config) {
 	layout.legend = layout.legend || {};
