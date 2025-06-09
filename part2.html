@@ -32,6 +32,35 @@
 
 			<!-- Home Section with 4 cards -->
 			<section data-role="home" class="active">
+				<section id="about-kubernetes" class="about-section">
+					<div class="about-content">
+						<img
+							src="https://github.com/kubernetes/kubernetes/blob/master/logo/logo.png?raw=true"
+							alt="Kubernetes Logo"
+							style="background-color: transparent; border: none; box-shadow: none;"
+							class="k8s-logo" />
+						<div>
+							<h1>Kubernetes Collaboration Dashboard</h1>
+							<p>
+								<b>Kubernetes</b> is an open source container
+								orchestration engine for automating deployment,
+								scaling, and management of containerized
+								applications.<br />
+								This dashboard visualizes collaboration,
+								diversity, and contributor mapping in the
+								Kubernetes community.<br />
+								<span class="about-link">
+									<a
+										href="https://kubernetes.io/docs/home/"
+										target="_blank"
+										>Learn more at kubernetes.io</a
+									>
+								</span>
+							</p>
+						</div>
+					</div>
+				</section>
+
 				<div class="grid">
 					<div
 						class="card"
@@ -68,7 +97,7 @@
 							by region.<br />
 						</p>
 					</div>
-					<div
+					<!-- <div
 						class="card"
 						style="cursor: pointer"
 						onclick="window.open('https://github.com/kubernetes/kubernetes','_blank')">
@@ -84,7 +113,7 @@
 								>github.com/kubernetes/kubernetes</a
 							><br />
 						</p>
-					</div>
+					</div> -->
 				</div>
 			</section>
 
@@ -145,6 +174,13 @@
 					);
 				});
 			}
+
+			document.addEventListener("DOMContentLoaded", () => {
+				setTimeout(() => {
+					const el = document.querySelector("#about-kubernetes");
+					el.classList.add('active');
+				}, 500);
+			});
 		</script>
 	</body>
 </html>

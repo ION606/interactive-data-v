@@ -37,6 +37,8 @@ header {
 	background: #334155;
 	margin-right: 0.25rem;
 	font-size: 0.875rem;
+	position: relative;
+	overflow: hidden;
 }
 
 #page-tabs button.active {
@@ -44,14 +46,55 @@ header {
 	color: #fff;
 }
 
+#page-tabs button.active::after {
+	content: "";
+	display: block;
+	position: absolute;
+	left: 10%;
+	bottom: 0;
+	width: 80%;
+	height: 3px;
+	background: linear-gradient(90deg, #6366f1 0%, #0ea5e9 100%);
+	border-radius: 2px;
+	animation: tabUnderline 0.4s cubic-bezier(.4, 1.5, .5, 1);
+}
+
+@keyframes tabUnderline {
+	from {
+		width: 0;
+		opacity: 0;
+	}
+
+	to {
+		width: 80%;
+		opacity: 1;
+	}
+}
+
 section {
 	padding: 1rem;
 	display: none;
 	height: 70%;
+	opacity: 0;
+	transition: opacity 0.5s;
 }
 
 section.active {
 	display: block;
+	opacity: 1;
+	animation: fadeInSection 0.7s;
+}
+
+@keyframes fadeInSection {
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 .grid {
@@ -70,14 +113,15 @@ section.active {
 	transition:
 		transform 0.18s cubic-bezier(.4, 1.5, .5, 1),
 		box-shadow 0.18s cubic-bezier(.4, 1.5, .5, 1),
-		background 0.18s;
+		background 0.18s,
+		filter 0.3s;
 }
 
 .card:hover,
 .card:focus-visible {
-	transform: translateY(-6px) scale(1.025);
-	box-shadow: 0 8px 24px #000a, 0 2px 6px #0006;
-	background: #273449;
+	box-shadow: 0 12px 32px #000a, 0 2px 6px #0006;
+	background: #334155;
+	filter: brightness(1.07);
 	z-index: 2;
 }
 
@@ -143,4 +187,90 @@ section.active {
 
 text {
 	color: white !important;
+}
+
+.about-section {
+	background: linear-gradient(90deg, #6366f1 0%, #0ea5e9 100%);
+	color: #fff;
+	padding: 2rem 1.5rem 1.5rem 1.5rem;
+	border-radius: 0 0 1.5rem 1.5rem;
+	margin-bottom: 1.5rem;
+	box-shadow: 0 4px 24px #0004;
+	animation: fadeInDown 1s cubic-bezier(.4, 1.5, .5, 1);
+}
+
+@keyframes fadeInDown {
+	from {
+		opacity: 0;
+		transform: translateY(-40px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.about-content {
+	display: flex;
+	align-items: center;
+	gap: 2rem;
+	max-width: 900px;
+	margin: auto;
+}
+
+.k8s-logo {
+	width: 80px;
+	height: 80px;
+	border-radius: 1rem;
+	background: #fff;
+	box-shadow: 0 2px 12px #0003;
+	margin-right: 1rem;
+	animation: spinLogo 3s linear infinite;
+}
+
+@keyframes spinLogo {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.about-content h1 {
+	margin: 0 0 0.5rem 0;
+	font-size: 2rem;
+	letter-spacing: 0.02em;
+}
+
+.about-content p {
+	font-size: 1.1rem;
+	line-height: 1.6;
+	margin: 0;
+}
+
+.about-link a {
+	color: #fff;
+	text-decoration: underline;
+	font-weight: bold;
+	transition: color 0.2s;
+}
+
+.about-link a:hover {
+	color: #fbbf24;
+}
+
+#about-kubernetes {
+	height: fit-content;
+	opacity: 0;
+	transform: translateY(-60px);
+	transition: opacity 0.7s cubic-bezier(.4, 1.5, .5, 1), transform 0.7s cubic-bezier(.4, 1.5, .5, 1);
+}
+
+/* When active, slide in */
+#about-kubernetes.active {
+	opacity: 1;
+	transform: translateY(0);
 }
