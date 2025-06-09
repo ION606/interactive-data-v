@@ -8,9 +8,12 @@
 		<script
 			src="https://cdn.plot.ly/plotly-3.0.1.min.js"
 			charset="utf-8"></script>
-		<script type="module" src="./part2_graphs.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
-		<link rel="stylesheet" href="part2.css" />
+		<script type="module" src="./part2/part2_graphs.js"></script>
+		<!-- <script type="module" src="./part2/plot_site_map.js"></script> -->
+
+		<link rel="stylesheet" href="./part2/part2.css" />
 	</head>
 
 	<body>
@@ -25,6 +28,7 @@
 
 			<nav id="page-tabs" style="margin: 1rem">
 				<button class="active" data-role="home">Home</button>
+				<button data-role="layout">Layout</button>
 				<button data-role="centrality">Network Centrality</button>
 				<button data-role="ladder">Ladder Flow</button>
 				<button data-role="diversity">Regional Diversity</button>
@@ -37,7 +41,11 @@
 						<img
 							src="https://github.com/kubernetes/kubernetes/blob/master/logo/logo.png?raw=true"
 							alt="Kubernetes Logo"
-							style="background-color: transparent; border: none; box-shadow: none;"
+							style="
+								background-color: transparent;
+								border: none;
+								box-shadow: none;
+							"
 							class="k8s-logo" />
 						<div>
 							<h1>Kubernetes Collaboration Dashboard</h1>
@@ -119,39 +127,61 @@
 
 			<!-- One section per page, each with both graph variants stacked vertically -->
 			<section data-role="centrality">
+				<button id="toggle-layout-btn" style="margin-bottom: 1rem">
+					Toggle Layout
+				</button>
 				<div class="card" style="height: 100%">
-					<h2>network centrality</h2>
+					<h2>Network Centrality</h2>
 					<div id="centrality-network" class="graph"></div>
+					<p
+						style="
+							font-size: 0.95rem;
+							color: #cbd5e1;
+							margin-top: 0.5rem;
+							width: 100%;
+							text-align: center;
+						">
+						Node size is correlated to the contributor's centrality
+						score in the network. Larger nodes are individuals who
+						are more central or influential in the collaboration
+						structure.
+					</p>
 				</div>
-
-				<div class="card" style="width: 95%;">
-					<h2>centrality scores – ranked bars</h2>
+				<div class="card" style="width: 95%">
+					<h2>Centrality Scores – Ranked Bars</h2>
 					<div id="centrality-bars" class="graph"></div>
 				</div>
 			</section>
 
 			<section data-role="ladder">
 				<div class="card">
-					<h2>ladder flow – line</h2>
+					<h2>Ladder Flow – Line</h2>
 					<div id="ladder-line" class="graph"></div>
 				</div>
 				<div class="card">
-					<h2>ladder flow – area</h2>
+					<h2>Ladder Flow – Area</h2>
 					<div id="ladder-area" class="graph"></div>
 				</div>
 			</section>
 
 			<section data-role="diversity">
 				<div class="card">
-					<h2>regional diversity – bars</h2>
+					<h2>Regional Diversity – Bars</h2>
 					<div id="diversity-bars" class="graph"></div>
 				</div>
 				<div class="card">
-					<h2>regional diversity – area</h2>
+					<h2>Regional Diversity – Area</h2>
 					<div id="diversity-area" class="graph"></div>
 				</div>
 			</section>
+
+			<section data-role="layout" style="text-align: center">
+				<img
+					style="width: 95%; min-width: 1000px"
+					src="https://mermaid.ink/img/pako:eNp1U9FumzAU_RXrPpMI0gCBh0kdKFq1rpPSqQ8bU-XCbWIV7Opi1mVRpP3D_nBfUtuQNE3aJ9vnnnN8fG1voFQVQgr3tXoqV5w0-5YXkrFPqsEfBdihgJ87hI1GH9j5neq0qbmRfe7ukCRqbI95GUpNvBZ6bchXqJ8UPRyAx_RLXlVIhtpP2NwkOubk4hdS2zsucCmU5PULeOq47pN-NQRe1wMw0F6SOPJVdjtkNIK5ohJHuSAsNVZsKLwr_MipNaqDwnWpCFv2_-8_tuDywXhYzmAwHNBFnN9eComvT-1kFmaZvZE3VeeE_A2VhV-p9s1xwkW-y3raPac_SHmiHLZ8R3myc9_s_sVcZxcX9sXYcVe4EWjvFzxYkqggved1ix40SA23a9hYlwL0Cu0bTM204vYSCrk1okcuvyvVQKqpMzJS3XK1N-keK64xF3xJvNmjhNI0K1Od1JAGSeJMIN3Ab0ijYOwnURglfhRM4uTMg7XhTIJx5IdBEMdJPAuDMNp68Mft6o-TyJ9NpuF0Gs6m8dlk5gFWQiv60n8o96-2z8DMHQA?type=png" />
+			</section>
 		</main>
+
 		<script>
 			// card switcher thing
 			function switchTab(tab) {
@@ -168,17 +198,21 @@
 					);
 				});
 				sections.forEach((sec) => {
-					sec.classList.toggle(
-						"active",
-						sec.getAttribute("data-role") === tab
-					);
+					if (sec.id !== "about-kubernetes") {
+						sec.classList.toggle(
+							"active",
+							sec.getAttribute("data-role") === tab
+						);
+					}
 				});
 			}
 
 			document.addEventListener("DOMContentLoaded", () => {
+				mermaid.initialize({ startOnLoad: true });
+
 				setTimeout(() => {
 					const el = document.querySelector("#about-kubernetes");
-					el.classList.add('active');
+					el.classList.add("active");
 				}, 500);
 			});
 		</script>

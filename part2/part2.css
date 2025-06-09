@@ -122,6 +122,7 @@ section.active {
 	box-shadow: 0 12px 32px #000a, 0 2px 6px #0006;
 	background: #334155;
 	filter: brightness(1.07);
+	transform: translateY(-5px);
 	z-index: 2;
 }
 
@@ -215,7 +216,6 @@ text {
 	display: flex;
 	align-items: center;
 	gap: 2rem;
-	max-width: 900px;
 	margin: auto;
 }
 
@@ -273,4 +273,32 @@ text {
 #about-kubernetes.active {
 	opacity: 1;
 	transform: translateY(0);
+}
+
+.card p {
+	margin: auto;
+	margin-top: auto;
+	margin-bottom: auto;
+	margin-top: 16px;
+	margin-bottom: 16px;
+
+	width: fit-content;
+	line-height: 30px;
+}
+
+#toggle-layout-btn {
+	background: #334155;
+	border: none;
+	color: #f1f5f9;
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background 0.3s, transform 0.2s;
+}
+
+#toggle-layout-btn:hover,
+#toggle-layout-btn:focus {
+	background: #6366f1;
+	transform: scale(1.05);
 }

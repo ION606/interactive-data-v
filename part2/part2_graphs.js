@@ -10,6 +10,8 @@ import {
 	drag,
 } from 'https://cdn.skypack.dev/d3@7';
 
+let useCircleLayout = false;
+
 document.addEventListener('DOMContentLoaded', () => {
 	initCharts();
 	wireRoleTabs();
@@ -17,8 +19,32 @@ document.addEventListener('DOMContentLoaded', () => {
 	wirePageTabs();
 	drawCentralityNetwork();
 
-	window.addEventListener('resize', drawCentralityNetwork)
+	document
+		.getElementById('toggle-layout-btn')
+		.addEventListener('click', () => {
+			useCircleLayout = !useCircleLayout;
+			drawCentralityNetwork();
+		});
+
+	window.addEventListener('resize', drawCentralityNetwork);
 });
+
+const darkCardLayout = {
+	paper_bgcolor: '#1e293b',
+	plot_bgcolor: '#1e293b',
+	font: { color: '#f1f5f9' },   // light text everywhere
+	xaxis: {
+		title: { text: 'Year', standoff: 10 },
+		tickfont: { color: '#f1f5f9' },
+		automargin: true
+	},
+	yaxis: {
+		title: { text: 'Contributors', standoff: 15 },
+		tickfont: { color: '#f1f5f9' },
+		automargin: true
+	},
+	margin: { t: 40, l: 60, r: 20, b: 60 }
+};
 
 // select the main elements for tab navigation
 const pageTabs = document.querySelector('#page-tabs'),
@@ -110,7 +136,9 @@ function drawCentralityNetwork() {
 		});
 	}
 
-	for (let i = 0; i < 10; i++) {
+	const interCons = Math.ceil(Math.random() * nodes.length);
+
+	for (let i = 0; i < Math.max(interCons, Math.ceil(nodes.length / 2)); i++) {
 		const a = Math.floor(Math.random() * nodes.length);
 		const b = Math.floor(Math.random() * nodes.length);
 		if (a !== b) {
@@ -121,88 +149,145 @@ function drawCentralityNetwork() {
 		}
 	}
 
-	// ---- primary: draw force graph in networkContainer ----
-	const svgNet = select(networkContainer)
-		.append('svg')
-		.attr('width', networkContainer.clientWidth)
-		.attr('height', networkContainer.clientHeight)
-		.append('g');
+	if (useCircleLayout) {
+		// Circular layout
+		networkContainer.innerHTML = '';
+		const svgNet = select(networkContainer)
+			.append('svg')
+			.attr('width', networkContainer.clientWidth)
+			.attr('height', networkContainer.clientHeight);
 
-	// set up forces
-	const simulation = forceSimulation(nodes)
-		.force('link', forceLink(links).id(d => d.id).distance(50).strength(0.1))
-		.force('charge', forceManyBody().strength(-100))
-		.force('center', forceCenter(window.innerWidth / 2, 320));
+		const radius = Math.min(networkContainer.clientWidth, networkContainer.clientHeight) / 2.5,
+			centerX = networkContainer.clientWidth / 2,
+			centerY = networkContainer.clientHeight / 2;
 
-	// draw links
-	const linkElements = svgNet
-		.append('g')
-		.attr('class', 'links')
-		.selectAll('line')
-		.data(links)
-		.enter()
-		.append('line')
-		.attr('stroke', '#888')
-		.attr('stroke-width', 1);
+		nodes.forEach((d, i) => {
+			const angle = (2 * Math.PI * i) / nodes.length;
+			d.x = centerX + radius * Math.cos(angle);
+			d.y = centerY + radius * Math.sin(angle);
+		});
 
-	// draw nodes
-	const nodeGroup = svgNet
-		.append('g')
-		.attr('class', 'nodes')
-		.selectAll('g')
-		.data(nodes)
-		.enter()
-		.append('g')
-		.call(drag()
-			.on('start', dragStarted)
-			.on('drag', dragged)
-			.on('end', dragEnded));
+		// draw links
+		svgNet
+			.append('g')
+			.attr('class', 'links')
+			.selectAll('line')
+			.data(links)
+			.enter()
+			.append('line')
+			.attr('stroke', '#888')
+			.attr('stroke-width', 1)
+			.attr('x1', d => nodes.find(n => n.id === d.source).x)
+			.attr('y1', d => nodes.find(n => n.id === d.source).y)
+			.attr('x2', d => nodes.find(n => n.id === d.target).x)
+			.attr('y2', d => nodes.find(n => n.id === d.target).y);
 
-	const nodeElements = nodeGroup
-		.append('circle')
-		.attr('r', d => 5 + d.centrality * 10)
-		.attr('fill', '#6366f1');
-
-	// add node names as labels
-	nodeGroup
-		.append('text')
-		.text(d => d.name)
-		.attr('fill', '#fff')
-		.attr('font-size', 10)
-		.attr('text-anchor', 'middle')
-		.attr('dy', -12);
-
-	// simple tooltip on hover
-	nodeElements
-		.append('title')
-		.text(d => `${d.name}: ${(d.centrality).toFixed(3)}`);
-
-	// simulation tick handler
-	simulation.on('tick', () => {
-		linkElements
-			.attr('x1', d => d.source.x)
-			.attr('y1', d => d.source.y)
-			.attr('x2', d => d.target.x)
-			.attr('y2', d => d.target.y);
+		// draw nodes
+		const nodeGroup = svgNet
+			.append('g')
+			.attr('class', 'nodes')
+			.selectAll('g')
+			.data(nodes)
+			.enter()
+			.append('g')
+			.attr('transform', d => `translate(${d.x},${d.y})`);
 
 		nodeGroup
-			.attr('transform', d => `translate(${d.x},${d.y})`);
-	});
+			.append('circle')
+			.attr('r', d => 5 + d.centrality * 10)
+			.attr('fill', '#6366f1');
 
-	// drag event functions
-	function dragStarted(event, d) {
-		if (!event.active) simulation.alphaTarget(0.3).restart();
-		d.fx = d.x;
-		d.fy = d.y;
-	}
-	function dragged(event, d) {
-		d.fx = event.x;
-		d.fy = event.y;
-	}
-	function dragEnded(event, d) {
-		if (!event.active) simulation.alphaTarget(0);
-		d.fx = null;
-		d.fy = null;
+		nodeGroup
+			.append('text')
+			.text(d => d.name)
+			.attr('fill', '#fff')
+			.attr('font-size', 10)
+			.attr('text-anchor', 'middle')
+			.attr('dy', -12);
+	} else {
+		// --- Original force-directed layout ---
+		const svgNet = select(networkContainer)
+			.append('svg')
+			.attr('width', networkContainer.clientWidth)
+			.attr('height', networkContainer.clientHeight)
+			.append('g');
+
+		// set up forces
+		const simulation = forceSimulation(nodes)
+			.force('link', forceLink(links).id(d => d.id).distance(50).strength(0.1))
+			.force('charge', forceManyBody().strength(-100))
+			.force('center', forceCenter(window.innerWidth / 2, 320));
+
+		// draw links
+		const linkElements = svgNet
+			.append('g')
+			.attr('class', 'links')
+			.selectAll('line')
+			.data(links)
+			.enter()
+			.append('line')
+			.attr('stroke', '#888')
+			.attr('stroke-width', 1);
+
+		// draw nodes
+		const nodeGroup = svgNet
+			.append('g')
+			.attr('class', 'nodes')
+			.selectAll('g')
+			.data(nodes)
+			.enter()
+			.append('g')
+			.call(drag()
+				.on('start', dragStarted)
+				.on('drag', dragged)
+				.on('end', dragEnded));
+
+		const nodeElements = nodeGroup
+			.append('circle')
+			.attr('r', d => 5 + d.centrality * 10)
+			.attr('fill', '#6366f1');
+
+		// add node names as labels
+		nodeGroup
+			.append('text')
+			.text(d => d.name)
+			.attr('fill', '#fff')
+			.attr('font-size', 10)
+			.attr('text-anchor', 'middle')
+			.attr('dy', -12);
+
+		// simple tooltip on hover
+		nodeElements
+			.append('title')
+			.text(d => `${d.name}: ${(d.centrality).toFixed(3)}`);
+
+		// simulation tick handler
+		simulation.on('tick', () => {
+			linkElements
+				.attr('x1', d => d.source.x)
+				.attr('y1', d => d.source.y)
+				.attr('x2', d => d.target.x)
+				.attr('y2', d => d.target.y);
+
+			nodeGroup
+				.attr('transform', d => `translate(${d.x},${d.y})`);
+		});
+
+		// drag event functions
+		function dragStarted(event, d) {
+			if (!event.active) simulation.alphaTarget(0.3).restart();
+			d.fx = d.x;
+			d.fy = d.y;
+		}
+		function dragged(event, d) {
+			d.fx = event.x;
+			d.fy = event.y;
+		}
+		function dragEnded(event, d) {
+			if (!event.active) simulation.alphaTarget(0);
+			d.fx = null;
+			d.fy = null;
+		}
 	}
 
 	// ---- secondary: draw bar chart of centrality scores in barsContainer ----
@@ -234,22 +319,43 @@ function drawCentralityNetwork() {
 				.html(`<strong>${d.name}</strong><br>Centrality: ${d.centrality.toFixed(3)}`)
 				.style('left', (event.pageX + 10) + 'px')
 				.style('top', (event.pageY - 28) + 'px');
+
+			// Highlight corresponding node in the network graph
+			const svgNet = select(networkContainer).select('svg');
+			if (svgNet.size()) {
+				svgNet.selectAll('g.nodes > g').each(function (nodeDatum) {
+					if (nodeDatum && nodeDatum.name === d.name) {
+						select(this).select('circle')
+							.attr('stroke', '#fbbf24')
+							.attr('stroke-width', 4);
+					}
+				});
+			}
 		})
 		.on('mousemove', function (event) {
 			tooltip
 				.style('left', (event.pageX + 10) + 'px')
 				.style('top', (event.pageY - 28) + 'px');
 		})
-		.on('mouseout', function () {
+		.on('mouseout', function (event, d) {
 			select(this)
 				.attr('fill', '#34d399');
 			tooltip.style('opacity', 0);
+
+			// Remove highlight from all nodes in the network graph
+			const svgNet = select(networkContainer).select('svg');
+			if (svgNet.size()) {
+				svgNet.selectAll('g.nodes > g').each(function () {
+					select(this).select('circle')
+						.attr('stroke', null)
+						.attr('stroke-width', null);
+				});
+			}
 		})
 		.on('click', function (event, d) {
 			svgBars.selectAll('.bar').attr('fill', '#34d399'); // reset all
 			select(this).attr('fill', '#f59e42'); // highlight selected
-			// Optionally, display details elsewhere or log
-			console.log('Selected:', d);
+			console.debug('Selected:', d);
 		});
 
 	// Tooltip div (add once)
@@ -269,7 +375,7 @@ function drawCentralityNetwork() {
 		.attr('x', widthBars / 2)
 		.attr('y', heightBars + marginBars.bottom - 5)
 		.attr('text-anchor', 'middle')
-		.text('node name')
+		.text('Node Name')
 		.attr('fill', '#fff');
 
 	svgBars.append('text')
@@ -277,7 +383,7 @@ function drawCentralityNetwork() {
 		.attr('x', -heightBars / 2)
 		.attr('y', -marginBars.left + 15)
 		.attr('text-anchor', 'middle')
-		.text('centrality')
+		.text('Centrality')
 		.attr('fill', '#fff');
 }
 
@@ -302,52 +408,36 @@ const centralityData = Array.from({ length: 45 }, (_, i) => ({
 
 /* chart initialisation */
 function initCharts() {
-	// Ladder Flow
+	const ladderData = ladderFlowSeries('line');
+	const ladderAreaData = ladderFlowSeries('area');
+	const diversityBarData = diversitySeries('bar');
+	const diversityAreaData = diversitySeries('area');
+
 	Plotly.newPlot(
 		qs('#ladder-line'),
-		ladderFlowSeries('line'),
-		{ margin: { t: 40 }, xaxis: { title: 'month', dtick: 1, color: '#fff' }, yaxis: { title: 'contributors', color: '#fff' } },
+		ladderData,
+		{ ...darkCardLayout, title: 'Ladder Flow – Line' },
 		{ responsive: true }
 	);
 
 	Plotly.newPlot(
 		qs('#ladder-area'),
-		ladderFlowSeries('area'),
-		{
-			margin: { t: 40 },
-			xaxis: { title: 'month', dtick: 1, color: '#fff' },
-			yaxis: { title: 'contributors', stacked: true, color: '#fff' },
-			legend: {
-				bgcolor: '#1e293b',
-				bordercolor: '#fff',
-				borderwidth: 1,
-				font: { color: '#fff', size: 14 }
-			}
-		},
+		ladderAreaData,
+		{ ...darkCardLayout, title: 'Ladder Flow – Area' },
 		{ responsive: true }
 	);
 
-	// Regional Diversity
 	Plotly.newPlot(
 		qs('#diversity-bars'),
-		diversitySeries('bar'),
-		{
-			barmode: 'group',
-			margin: { t: 40 },
-			xaxis: { title: 'month', dtick: 1, color: '#fff' },
-			yaxis: { title: 'contributors', color: '#fff' }
-		},
+		diversityBarData,
+		{ ...darkCardLayout, title: 'Regional Diversity – Bars' },
 		{ responsive: true }
 	);
 
 	Plotly.newPlot(
 		qs('#diversity-area'),
-		diversitySeries('area'),
-		{
-			margin: { t: 40 },
-			xaxis: { title: 'month', dtick: 1, color: '#fff' },
-			yaxis: { title: 'contributors', stacked: true, color: '#fff' }
-		},
+		diversityAreaData,
+		{ ...darkCardLayout, title: 'Regional Diversity – Area' },
 		{ responsive: true }
 	);
 }
@@ -451,6 +541,7 @@ const origPlotlyNewPlot = Plotly.newPlot;
 Plotly.newPlot = function (container, data, layout = {}, config) {
 	layout.legend = layout.legend || {};
 	layout.legend.font = layout.legend.font || {};
-	layout.legend.font.color = '#fff';
+	// layout.legend.font.color = '#fff';
+	// layout.legend.background = '#000'
 	return origPlotlyNewPlot(container, data, layout, config);
 };
