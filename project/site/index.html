@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Credit-Card Fraud Model Dashboard</title>
+		<link rel="stylesheet" href="./style.css" />
+	</head>
+	<body>
+		<header>
+			<h1>Fraud Model Threshold Explorer</h1>
+		</header>
+
+		<main class="dashboard">
+			<!-- threshold control -->
+			<section class="control">
+				<label>
+					decision threshold:
+					<input
+						id="threshold"
+						type="range"
+						min="0"
+						max="1"
+						step="0.01"
+						value="0.5" />
+					<span id="th-val">0.50</span>
+				</label>
+			</section>
+
+			<!-- performance chart -->
+			<section class="chart">
+				<h2>precision-recall curve</h2>
+				<canvas id="pr-chart"></canvas>
+			</section>
+
+			<!-- key metrics -->
+			<section id="kpis">
+				<h2>key metrics</h2>
+				<p>
+					<strong>precision:</strong> <span id="precision">–</span> |
+					<strong>recall:</strong> <span id="recall">–</span> |
+					<strong>f1 score:</strong> <span id="f1">–</span>
+				</p>
+			</section>
+
+			<!-- confusion matrix -->
+			<section class="matrix">
+				<h2>confusion matrix</h2>
+				<table id="cm">
+					<thead>
+						<tr>
+							<th></th>
+							<th>pred 0</th>
+							<th>pred 1</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th>actual 0</th>
+							<td id="tn">–</td>
+							<td id="fp">–</td>
+						</tr>
+						<tr>
+							<th>actual 1</th>
+							<td id="fn">–</td>
+							<td id="tp">–</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<!-- explanatory panel -->
+			<section id="explanation">
+				<h2>What is all this?</h2>
+				<p>
+					By moving the threshold slider, you decide how confident the
+					model must be before flagging a transaction as fraud (pred
+					1). The precision-recall curve and key metrics update
+					instantly to show the trade-off: a higher threshold reduces
+					false positives (pred 1 on actual 0) but may increase false
+					negatives (pred 0 on actual 1).
+				</p>
+			</section>
+		</main>
+
+		<script type="module" src="./main.js"></script>
+	</body>
+</html>

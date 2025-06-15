@@ -1,0 +1,63 @@
+/* layout and typography */
+body {
+	font-family: system-ui, sans-serif;
+	margin: 2rem;
+	line-height: 1.5;
+}
+
+header h1 {
+	margin-bottom: 1rem;
+	text-align: center;
+}
+
+.dashboard {
+	display: grid;
+	gap: 2rem;
+	grid-template-columns: 1fr 1fr;
+	align-items: start;
+}
+
+/* full-width sections */
+.control,
+#kpis,
+#explanation {
+	grid-column: 1 / -1;
+}
+
+/* metric styling */
+#kpis p {
+	font-size: 1.1rem;
+}
+
+/* table styling */
+#cm {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 1rem;
+}
+
+#cm th,
+#cm td {
+	border: 1px solid #888;
+	padding: 0.5rem 1rem;
+	text-align: center;
+}
+
+/* slider alignment */
+input[type="range"] {
+	vertical-align: middle;
+}
+
+/* explanation panel */
+#explanation {
+	background: #f9f9f9;
+	padding: 1rem;
+	border-radius: 4px;
+	font-size: 0.95rem;
+}
+
+/* ensure canvas fills its grid cell */
+.chart canvas {
+	width: 100% !important;
+	height: 400px !important;
+}
