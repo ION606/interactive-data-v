@@ -11,7 +11,7 @@ header h1 {
 }
 
 .dashboard {
-	display: grid;
+	/* display: grid; */
 	gap: 2rem;
 	grid-template-columns: 1fr 1fr;
 	align-items: start;
@@ -22,6 +22,10 @@ header h1 {
 #kpis,
 #explanation {
 	grid-column: 1 / -1;
+}
+
+.control {
+	border: none;
 }
 
 /* metric styling */
@@ -48,9 +52,14 @@ input[type="range"] {
 	vertical-align: middle;
 }
 
+section {
+	border: dotted 1px rgba(255, 255, 255, 0.281);
+	margin: 5px 0px;
+	padding: 0px 10px;
+}
+
 /* explanation panel */
 #explanation {
-	background: #f9f9f9;
 	padding: 1rem;
 	border-radius: 4px;
 	font-size: 0.95rem;
@@ -60,4 +69,23 @@ input[type="range"] {
 .chart canvas {
 	width: 100% !important;
 	height: 400px !important;
+}
+
+button {
+	right: 10px;
+	top: 10px;
+	position: absolute;
+	padding: 5px 10px;
+	cursor: pointer;
+	background: #eeeeee00;
+	border: none;
+	outline: none;
+	font-size: larger;
+	border-radius: 16px;
+	transition: background 0.2s;
+}
+
+button:hover {
+	background: black;
+	border: solid white 1px;
 }
