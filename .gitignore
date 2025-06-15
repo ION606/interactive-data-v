@@ -2,3 +2,6 @@ tmp/
 part2_metrics/
 *.txt
 .venv/
+project/data/
+*.csv
+node_modules/
