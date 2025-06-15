@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>PR Demo</title>
+		<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+	</head>
+
+	<body>
+		<div id="pr-chart" style="width: 100%; height: 450px"></div>
+
+		<script type="module">
+			// fetch your model outputs (make sure express.static('public') serves /data/)
+			const [r1, r2] = await Promise.all([
+				fetch("/project/data/probabilities.json"),
+				fetch("/project/data/labels.json"),
+			]);
+			const yProb = await r1.json();
+			const yTrue = await r2.json();
+
+			// build thresholds at each unique probability (sorted ascending)
+			const thresholds = Array.from(new Set(yProb)).sort((a, b) => a - b);
+
+			// compute precision & recall for every threshold
+			const precision = [];
+			const recall = [];
+			thresholds.forEach((t) => {
+				let tp = 0,
+					fp = 0,
+					fn = 0;
+				// single pass is more efficient than filter()
+				yProb.forEach((p, i) => {
+					if (p >= t) {
+						yTrue[i] === 1 ? tp++ : fp++;
+					} else {
+						if (yTrue[i] === 1) fn++;
+					}
+				});
+				precision.push(tp / (tp + fp + Number.EPSILON));
+				recall.push(tp / (tp + fn + Number.EPSILON));
+			});
+
+			// compute F₁ scores in exactly the same order
+			const f1 = precision.map(
+				(p, i) => (2 * p * recall[i]) / (p + recall[i] + Number.EPSILON)
+			);
+			// find the index of the maximum F₁
+			const idxBest = f1.indexOf(Math.max(...f1));
+			// pick the corresponding threshold
+			const tBest = thresholds[idxBest];
+
+			// plotly traces
+			const trace = {
+				x: recall,
+				y: precision,
+				mode: "lines",
+				name: "PR curve",
+			};
+			const marker = {
+				x: [recall[idxBest]],
+				y: [precision[idxBest]],
+				mode: "markers+text",
+				text: [`opt t=${tBest.toFixed(2)}`],
+				textposition: "top right",
+				name: "F₁-max",
+			};
+
+			Plotly.newPlot(
+				document.querySelector("#pr-chart"),
+				[trace, marker],
+				{
+					xaxis: { title: "Recall" },
+					yaxis: { title: "Precision" },
+					hovermode: "closest",
+					margin: { l: 50, r: 20, t: 20, b: 50 },
+				}
+			);
+		</script>
+	</body>
+</html>
