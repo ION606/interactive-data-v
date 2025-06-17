@@ -27,7 +27,6 @@
 
 			<nav id="page-tabs" style="margin: 1rem">
 				<button class="active" data-role="home">Home</button>
-				<button data-role="info">Info</button>
 				<button data-role="centrality">Network Centrality</button>
 				<button data-role="ladder">Ladder Flow</button>
 				<button data-role="diversity">Regional Diversity</button>
@@ -154,45 +153,6 @@
 					<div id="diversity-area" class="graph"></div>
 				</div>
 			</section>
-
-			<section data-role="info" style="text-align: center">
-				<!-- <img
-					style="width: 95%; min-width: 1000px"
-					src="https://mermaid.ink/svg/pako:eNp1kt9OwjAUxl-lOdeD7C8buzDRLcQL5AK90hnSbIexsLXkrIhISHwH39AnsRsTEHU3bb9-v-_0dN1BKjOEEOal3KQLToo9xIlg7FZW-JRAMyTw_K2wXu-KRSgU8bJQW22YoNpIWp6Jl_YxzzIkbT1M2EhXuvTExQtSfUicYl5IwcuT2LlPJVpmEs264hoaSUqxFxeEqcKMdRv_gjecak2dbdynkrBmn-8fbMrFUmc0ni6gO3nbzWg2LgT-bKfFGplFzRV21PH8LTiNZ9eE_M8Gf_NgQE5FBuGclzUaUCFVvFnDrolOQC2w-TOhnma86TQRew2tuHiUsoJQ0VpjJNf54hiyXmVcYVzwnHh1VAmF7iOSa6EgtGzfbVMg3MGrXpte3zMt2zZ907Fsz4CtFh2r7weO5dpmMAxcx_f2Bry1Zc1-4Hum_uyBEwQDdzg0ALNCSbo7vLP2ue2_AMu_zrI" /> -->
-
-				<div
-					class="tutorial-container"
-					style="max-width: 600px; margin: auto">
-					<h2>Tutorial</h2>
-					<p>
-						Welcome to the interactive tutorial for the Kubernetes
-						Collaboration Dashboard. This demo walks you through the
-						key features available on each graph.
-					</p>
-					<ol style="text-align: left">
-						<li>
-							<strong>Tooltip Hover:</strong> Hover over data
-							points to see additional details.
-						</li>
-						<li>
-							<strong>Legend Interaction:</strong> Click on legend
-							items to toggle visibility.
-						</li>
-						<li>
-							<strong>Selection Rectangle:</strong> A demo will
-							highlight a range of data with a custom shape.
-						</li>
-						<li>
-							<strong>Replay Demo:</strong> Use the replay button
-							on each graph to run the tutorial demo again.
-						</li>
-					</ol>
-					<p>
-						If you'd rather explore on your own, click "skip
-						tutorial" to disable the demo.
-					</p>
-				</div>
-			</section>
 		</main>
 
 		<!-- Tutorial Modal -->
@@ -210,10 +170,10 @@
 		</div>
 
 		<script>
-			const main = document.querySelector("main");
-			const modal = document.getElementById("tutorial-modal");
-			const yesBtn = document.getElementById("tutorial-yes");
-			const noBtn = document.getElementById("tutorial-no");
+			const main = document.querySelector("main"),
+				modal = document.getElementById("tutorial-modal"),
+				yesBtn = document.getElementById("tutorial-yes"),
+				noBtn = document.getElementById("tutorial-no");
 
 			// Only show modal if tutorial not done
 			if (!localStorage.getItem("tutorialDone")) {
@@ -227,17 +187,30 @@
 
 			noBtn?.addEventListener("click", () => {
 				localStorage.setItem("tutorialDone", "true");
-				modal.style.display = "none";
-				main.style.display = "";
+				window.location.reload();
 			});
 
 			document.addEventListener("DOMContentLoaded", () => {
 				mermaid.initialize({ startOnLoad: true });
 
 				setTimeout(() => {
-					const el = document.querySelector("#about-kubernetes");
-					el.classList.add("active");
-				}, 500);
+					// Pop effect for .card on home
+					document
+						.querySelectorAll('[data-role="home"] .card')
+						.forEach((card, i) => {
+							setTimeout(() => {
+								card.classList.add("pop-effect");
+								// Remove the class after animation so it can be triggered again if needed
+								card.addEventListener(
+									"animationend",
+									() => {
+										card.classList.remove("pop-effect");
+									},
+									{ once: true }
+								);
+							}, 240 * i); // stagger for a nice effect
+						});
+				}, 1500);
 			});
 		</script>
 	</body>
