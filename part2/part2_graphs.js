@@ -53,15 +53,19 @@ const pageTabs = document.querySelector('#page-tabs'),
 // handle tab clicks to switch between pages
 pageTabs.addEventListener('click', (evt) => {
 	const target = evt.target;
+
 	// check if a button with data-role was clicked
 	if (target.matches('button[data-role]')) {
 		const selectedRole = target.getAttribute('data-role');
+
 		// remove active class from all buttons
 		pageTabs.querySelectorAll('button').forEach(btn => {
 			btn.classList.remove('active');
 		});
+
 		// add active class to clicked button
 		target.classList.add('active');
+
 		// show/hide sections
 		sections.forEach(sec => {
 			if (sec.getAttribute('data-role') === selectedRole) {
@@ -70,9 +74,23 @@ pageTabs.addEventListener('click', (evt) => {
 				sec.classList.remove('active');
 			}
 		});
+
 		// Redraw network only when switching to centrality tab
 		if (selectedRole === 'centrality') {
 			drawCentralityNetwork();
+		}
+
+		if (selectedRole === "info") {
+			import("/part2/tutorial.js")
+				.then((module) => {
+					console.log("Tutorial module loaded");
+				})
+				.catch((err) =>
+					console.error(
+						"Failed to load tutorial module",
+						err
+					)
+				);
 		}
 	}
 });
@@ -100,8 +118,6 @@ function drawCentralityNetwork() {
 	const marginBars = { top: 20, right: 20, bottom: 40, left: 80 },
 		widthBars = barsContainer.clientWidth - marginBars.left - marginBars.right,
 		heightBars = barsContainer.clientHeight - marginBars.top - marginBars.bottom;
-
-	console.log(barsContainer.clientWidth, barsContainer.clientHeight, widthBars, heightBars);
 
 	// create an svg for bar chart
 	const svgBars = select(barsContainer)
@@ -410,7 +426,6 @@ const centralityData = Array.from({ length: 45 }, (_, i) => ({
 function initCharts() {
 	const ladderData = ladderFlowSeries('line');
 	const ladderAreaData = ladderFlowSeries('area');
-	const diversityBarData = diversitySeries('bar');
 	const diversityAreaData = diversitySeries('area');
 
 	Plotly.newPlot(
@@ -421,23 +436,9 @@ function initCharts() {
 	);
 
 	Plotly.newPlot(
-		qs('#ladder-area'),
-		ladderAreaData,
-		{ ...darkCardLayout, title: 'Ladder Flow – Area' },
-		{ responsive: true }
-	);
-
-	Plotly.newPlot(
-		qs('#diversity-bars'),
-		diversityBarData,
-		{ ...darkCardLayout, title: 'Regional Diversity – Bars' },
-		{ responsive: true }
-	);
-
-	Plotly.newPlot(
 		qs('#diversity-area'),
 		diversityAreaData,
-		{ ...darkCardLayout, title: 'Regional Diversity – Area' },
+		{ ...darkCardLayout, title: 'Regional Diversity' },
 		{ responsive: true }
 	);
 }
@@ -539,9 +540,15 @@ const qs = sel => document.querySelector(sel),
 
 const origPlotlyNewPlot = Plotly.newPlot;
 Plotly.newPlot = function (container, data, layout = {}, config) {
-	layout.legend = layout.legend || {};
-	layout.legend.font = layout.legend.font || {};
-	// layout.legend.font.color = '#fff';
-	// layout.legend.background = '#000'
-	return origPlotlyNewPlot(container, data, layout, config);
+	try {
+		layout.legend = layout.legend || {};
+		layout.legend.font = layout.legend.font || {};
+		// layout.legend.font.color = '#fff';
+		// layout.legend.background = '#000'
+		return origPlotlyNewPlot(container, data, layout, config);
+	}
+	catch (err) {
+		console.error(err);
+		return null;
+	}
 };

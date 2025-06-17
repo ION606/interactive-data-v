@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Interactive Data Survey</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<h1>Interactive Data Survey</h1>
+		<form id="surveyForm" novalidate>
+			<!-- ===================================================== -->
+			<!-- 1. PARTICIPANT BACKGROUND (8 items)                    -->
+			<!-- ===================================================== -->
+			<section>
+				<h2>1 · Participant Background</h2>
+
+				<fieldset>
+					<legend>What is your name?</legend>
+					<label>
+						Name:
+						<input type="text" name="participant_name" required />
+					</label>
+				</fieldset>
+
+				<!-- Q1 -->
+				<fieldset>
+					<legend>
+						How often do you work with interactive data
+						visualisations?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="freq_viz"
+							value="Never"
+							required />
+						never</label
+					>
+					<label
+						><input
+							type="radio"
+							name="freq_viz"
+							value="Occasionally" />
+						occasionally (≈ monthly)</label
+					>
+					<label
+						><input
+							type="radio"
+							name="freq_viz"
+							value="Regularly" />
+						regularly (≈ weekly)</label
+					>
+					<label
+						><input
+							type="radio"
+							name="freq_viz"
+							value="Frequently" />
+						frequently (daily)</label
+					>
+
+					<div
+						class="followup"
+						data-trigger="freq_viz"
+						data-value="Never,Occasionally">
+						<label
+							>name one tool or chart style you recall using most
+							recently:
+							<input type="text" name="tool_recent" />
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- Q2 -->
+				<fieldset>
+					<legend>
+						What is your primary role when you engage with software
+						projects?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="role_primary"
+							value="Developer"
+							required />
+						developer</label
+					>
+					<label
+						><input
+							type="radio"
+							name="role_primary"
+							value="Designer" />
+						designer</label
+					>
+					<label
+						><input
+							type="radio"
+							name="role_primary"
+							value="Project Manager" />
+						project manager</label
+					>
+					<label
+						><input
+							type="radio"
+							name="role_primary"
+							value="Researcher" />
+						researcher</label
+					>
+					<label
+						><input
+							type="radio"
+							name="role_primary"
+							value="Other" />
+						other</label
+					>
+
+					<div
+						class="followup"
+						data-trigger="role_primary"
+						data-value="Developer,Designer,Project Manager,Researcher,Other">
+						<label
+							>how many years have you held this role?
+							<input
+								type="number"
+								name="role_years"
+								min="0"
+								step="1" />
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- Q3 -->
+				<fieldset>
+					<legend>
+						What is your familiarity with Kubernetes or similar
+						open-source infrastructure projects?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="k8s_fam"
+							value="None"
+							required />
+						none</label
+					>
+					<label
+						><input type="radio" name="k8s_fam" value="Beginner" />
+						beginner</label
+					>
+					<label
+						><input
+							type="radio"
+							name="k8s_fam"
+							value="Intermediate" />
+						intermediate</label
+					>
+					<label
+						><input type="radio" name="k8s_fam" value="Advanced" />
+						advanced</label
+					>
+
+					<div
+						class="followup"
+						data-trigger="k8s_fam"
+						data-value="Beginner,Intermediate,Advanced">
+						<label
+							>briefly describe one contribution or interaction
+							you have had:
+							<textarea name="k8s_contrib"></textarea>
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- Q4 -->
+				<fieldset>
+					<legend>
+						Do you have any form of color-vision deficiency?
+					</legend>
+					<label
+						><input type="radio" name="cvd" value="No" required />
+						no</label
+					>
+					<label
+						><input type="radio" name="cvd" value="Red-Green" /> yes
+						– red-green</label
+					>
+					<label
+						><input type="radio" name="cvd" value="Blue-Yellow" />
+						yes – blue-yellow</label
+					>
+					<label
+						><input type="radio" name="cvd" value="Unsure" />
+						unsure</label
+					>
+
+					<div
+						class="followup"
+						data-trigger="cvd"
+						data-value="Red-Green,Blue-Yellow">
+						<label
+							>which accessibility aids (e.g. high-contrast mode,
+							pattern textures) do you typically enable?
+							<textarea name="cvd_aids"></textarea>
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- Q5 -->
+				<fieldset>
+					<legend>
+						Which device and approximate screen size did you use for
+						the test session?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="device"
+							value="Desktop"
+							required />
+						desktop ≥ 24″</label
+					>
+					<label
+						><input type="radio" name="device" value="Laptop" />
+						laptop 13–15″</label
+					>
+					<label
+						><input type="radio" name="device" value="Tablet" />
+						tablet ≤ 12″</label
+					>
+					<label
+						><input type="radio" name="device" value="Smartphone" />
+						smartphone ≤ 7″</label
+					>
+
+					<div
+						class="followup"
+						data-trigger="device"
+						data-value="Desktop,Laptop,Tablet,Smartphone">
+						<label
+							>if known, enter your screen resolution or scaling
+							setting:
+							<input type="text" name="screen_res" />
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- Q6 -->
+				<fieldset>
+					<legend>
+						How confident do you feel using interactive dashboards
+						in general? (1 = not confident … 5 = very confident)
+					</legend>
+					<select name="dash_conf" required>
+						<option value="" disabled selected>select…</option>
+						<option>1</option>
+						<option>2</option>
+						<option>3</option>
+						<option>4</option>
+						<option>5</option>
+					</select>
+
+					<div
+						class="followup"
+						data-trigger="dash_conf"
+						data-value="1,2,3">
+						<label
+							>choose one factor that most affects your
+							confidence:
+							<select name="dash_conf_factor">
+								<option value="" disabled selected>
+									select…
+								</option>
+								<option>training</option>
+								<option>frequency of use</option>
+								<option>interface complexity</option>
+								<option>other</option>
+							</select>
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- Q7 -->
+				<fieldset>
+					<legend>
+						Before today, how interested were you in open-source
+						contributor analytics? (1 = not interested … 5 = very
+						interested)
+					</legend>
+					<select name="interest_analytics" required>
+						<option value="" disabled selected>select…</option>
+						<option>1</option>
+						<option>2</option>
+						<option>3</option>
+						<option>4</option>
+						<option>5</option>
+					</select>
+
+					<div
+						class="followup"
+						data-trigger="interest_analytics"
+						data-value="1,2,3">
+						<label
+							>what might increase your interest?
+							<textarea name="interest_increase"></textarea>
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- Q8 -->
+				<fieldset>
+					<legend>
+						How often do you consult metrics about code
+						contributions?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="metrics_freq"
+							value="Never"
+							required />
+						never</label
+					>
+					<label
+						><input
+							type="radio"
+							name="metrics_freq"
+							value="< Monthly" />&lt; monthly</label
+					>
+					<label
+						><input
+							type="radio"
+							name="metrics_freq"
+							value="Monthly" />
+						monthly</label
+					>
+					<label
+						><input
+							type="radio"
+							name="metrics_freq"
+							value="Weekly" />
+						weekly</label
+					>
+					<label
+						><input
+							type="radio"
+							name="metrics_freq"
+							value="Daily" />
+						daily</label
+					>
+
+					<div
+						class="followup"
+						data-trigger="metrics_freq"
+						data-value="Monthly,Weekly,Daily">
+						<label
+							>name the metric you use most:
+							<input type="text" name="metric_name" />
+						</label>
+					</div>
+				</fieldset>
+			</section>
+
+			<!-- ===================================================== -->
+			<!-- 2. DATA VIEWS (13 items)                              -->
+			<!-- ===================================================== -->
+			<section>
+				<h2>2 · Data Views – Ladder Flow</h2>
+
+				<!-- LF-Q1 -->
+				<fieldset>
+					<legend>
+						How easy was it to distinguish the different ladder
+						stages in the Ladder Flow chart?
+					</legend>
+					<select name="lf_distinguish" required>
+						<option value="" disabled selected>select…</option>
+						<option>1</option>
+						<option>2</option>
+						<option>3</option>
+						<option>4</option>
+						<option>5</option>
+					</select>
+					<div
+						class="followup"
+						data-trigger="lf_distinguish"
+						data-value="1,2,3">
+						<label
+							>what made it difficult?
+							<textarea name="lf_distinguish_diff"></textarea>
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- LF-Q2 -->
+				<fieldset>
+					<legend>
+						Did the hover tooltip help you interpret contributor
+						counts at each stage?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="lf_tooltip"
+							value="Yes"
+							required />
+						yes</label
+					>
+					<label
+						><input type="radio" name="lf_tooltip" value="No" />
+						no</label
+					>
+					<div
+						class="followup"
+						data-trigger="lf_tooltip"
+						data-value="No">
+						<label
+							>what additional detail would you find useful?
+							<textarea name="lf_tooltip_detail"></textarea>
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- LF-Q3 -->
+				<fieldset>
+					<legend>
+						After using the cohort filter, were you able to follow a
+						single cohort’s progression over time?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="lf_cohort_follow"
+							value="Yes"
+							required />
+						yes</label
+					>
+					<label
+						><input
+							type="radio"
+							name="lf_cohort_follow"
+							value="Partly" />
+						partly</label
+					>
+					<label
+						><input
+							type="radio"
+							name="lf_cohort_follow"
+							value="No" />
+						no</label
+					>
+					<div
+						class="followup"
+						data-trigger="lf_cohort_follow"
+						data-value="Partly,No">
+						<label
+							>describe any point where you lost track of the
+							cohort:
+							<textarea name="lf_cohort_lost"></textarea>
+						</label>
+					</div>
+				</fieldset>
+			</section>
+
+			<section>
+				<h2>Data Views – Network Centrality</h2>
+
+				<!-- NC-Q4 -->
+				<fieldset>
+					<legend>
+						How confident did you feel identifying highly connected
+						contributors? (1 = low … 5 = high)
+					</legend>
+					<select name="nc_confidence" required>
+						<option value="" disabled selected>select…</option>
+						<option>1</option>
+						<option>2</option>
+						<option>3</option>
+						<option>4</option>
+						<option>5</option>
+					</select>
+					<div
+						class="followup"
+						data-trigger="nc_confidence"
+						data-value="1,2,3,4,5">
+						<label
+							>which visual element most influenced that
+							confidence?
+							<textarea name="nc_conf_elem"></textarea>
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- NC-Q5 -->
+				<fieldset>
+					<legend>
+						Did pinning a node to isolate its connections change
+						your understanding of collaboration patterns?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="nc_pin"
+							value="Yes"
+							required />
+						yes</label
+					>
+					<label
+						><input type="radio" name="nc_pin" value="Somewhat" />
+						somewhat</label
+					>
+					<label
+						><input type="radio" name="nc_pin" value="No" />
+						no</label
+					>
+				</fieldset>
+
+				<!-- NC-Q6 -->
+				<fieldset>
+					<legend>
+						Were the colours and node sizes helpful in
+						distinguishing contributor roles?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="nc_colour_help"
+							value="Always"
+							required />
+						always</label
+					>
+					<label
+						><input
+							type="radio"
+							name="nc_colour_help"
+							value="Sometimes" />
+						sometimes</label
+					>
+					<label
+						><input
+							type="radio"
+							name="nc_colour_help"
+							value="Never" />
+						never</label
+					>
+					<div
+						class="followup"
+						data-trigger="nc_colour_help"
+						data-value="Sometimes,Never">
+						<label
+							>what alternative cues would you suggest?
+							<textarea name="nc_colour_alt"></textarea>
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- NC-Q7 -->
+				<fieldset>
+					<legend>
+						When you toggled the layout view, did the new
+						arrangement improve your ability to see clusters?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="nc_layout"
+							value="Yes"
+							required />
+						yes</label
+					>
+					<label
+						><input type="radio" name="nc_layout" value="No" />
+						no</label
+					>
+					<div
+						class="followup"
+						data-trigger="nc_layout"
+						data-value="Yes,No">
+						<label
+							>which cluster, if any, became clearer?
+							<textarea name="nc_layout_cluster"></textarea>
+						</label>
+					</div>
+				</fieldset>
+			</section>
+
+			<section>
+				<h2>Data Views – Regional Diversity</h2>
+
+				<!-- RD-Q8 -->
+				<fieldset>
+					<legend>
+						How easy was it to compare contributor counts between
+						regions for a given year? (1 = hard … 5 = easy)
+					</legend>
+					<select name="rd_compare" required>
+						<option value="" disabled selected>select…</option>
+						<option>1</option>
+						<option>2</option>
+						<option>3</option>
+						<option>4</option>
+						<option>5</option>
+					</select>
+					<div
+						class="followup"
+						data-trigger="rd_compare"
+						data-value="1,2,3,4">
+						<label
+							>what action or view helped (or would help) the
+							comparison?
+							<textarea name="rd_compare_action"></textarea>
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- RD-Q9 -->
+				<fieldset>
+					<legend>
+						Did hiding one or more regions change your perception of
+						overall contributor trends?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="rd_hide"
+							value="Yes"
+							required />
+						yes</label
+					>
+					<label
+						><input type="radio" name="rd_hide" value="No" />
+						no</label
+					>
+					<div
+						class="followup"
+						data-trigger="rd_hide"
+						data-value="Yes">
+						<label
+							>which region’s removal had the biggest effect?
+							<textarea name="rd_hide_region"></textarea>
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- RD-Q10 -->
+				<fieldset>
+					<legend>
+						Were the tooltip details sufficient for understanding
+						precise values?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="rd_tooltip"
+							value="Always"
+							required />
+						always</label
+					>
+					<label
+						><input
+							type="radio"
+							name="rd_tooltip"
+							value="Sometimes" />
+						sometimes</label
+					>
+					<label
+						><input type="radio" name="rd_tooltip" value="Never" />
+						never</label
+					>
+					<div
+						class="followup"
+						data-trigger="rd_tooltip"
+						data-value="Sometimes,Never">
+						<label
+							>what extra detail would help?
+							<textarea name="rd_tooltip_extra"></textarea>
+						</label>
+					</div>
+				</fieldset>
+			</section>
+
+			<section>
+				<h2>Data Views – Cross-view &amp; Interface</h2>
+
+				<!-- CV-Q11 -->
+				<fieldset>
+					<legend>
+						How intuitive was the legend interaction (click to
+						show/hide) across the charts? (1 = not … 5 = very)
+					</legend>
+					<select name="cv_legend" required>
+						<option value="" disabled selected>select…</option>
+						<option>1</option>
+						<option>2</option>
+						<option>3</option>
+						<option>4</option>
+						<option>5</option>
+					</select>
+					<div
+						class="followup"
+						data-trigger="cv_legend"
+						data-value="1,2,3,4">
+						<label
+							>which chart’s legend, if any, felt unclear?
+							<textarea name="cv_legend_unclear"></textarea>
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- CV-Q12 -->
+				<fieldset>
+					<legend>
+						Did the site provide enough feedback (e.g. animations,
+						pointer changes) to signal interactive elements?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="cv_feedback"
+							value="Always"
+							required />
+						always</label
+					>
+					<label
+						><input
+							type="radio"
+							name="cv_feedback"
+							value="Sometimes" />
+						sometimes</label
+					>
+					<label
+						><input type="radio" name="cv_feedback" value="Never" />
+						never</label
+					>
+					<div
+						class="followup"
+						data-trigger="cv_feedback"
+						data-value="Sometimes,Never">
+						<label
+							>name one element where feedback could be stronger:
+							<textarea name="cv_feedback_element"></textarea>
+						</label>
+					</div>
+				</fieldset>
+
+				<!-- CV-Q13 -->
+				<fieldset>
+					<legend>
+						Was the time-range control responsive and precise for
+						your tasks?
+					</legend>
+					<label
+						><input
+							type="radio"
+							name="cv_timerange"
+							value="Yes completely"
+							required />
+						yes completely</label
+					>
+					<label
+						><input
+							type="radio"
+							name="cv_timerange"
+							value="Yes partly" />
+						yes partly</label
+					>
+					<label
+						><input type="radio" name="cv_timerange" value="No" />
+						no</label
+					>
+					<div
+						class="followup"
+						data-trigger="cv_timerange"
+						data-value="Yes partly,No">
+						<label
+							>describe any lag or uncertainty you encountered:
+							<textarea name="cv_timerange_lag"></textarea>
+						</label>
+					</div>
+				</fieldset>
+			</section>
+
+			<button type="submit">submit survey</button>
+		</form>
+
+		<script src="script.js"></script>
+	</body>
+</html>

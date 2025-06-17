@@ -11,6 +11,7 @@
 		<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
 		<script type="module" src="./part2/part2_graphs.js"></script>
+		<script type="module" src="./part2/tutorial.js"></script>
 
 		<link rel="stylesheet" href="./part2/part2.css" />
 	</head>
@@ -27,10 +28,13 @@
 
 			<nav id="page-tabs" style="margin: 1rem">
 				<button class="active" data-role="home">Home</button>
-				<button data-role="layout">Layout</button>
+				<button data-role="info">Info</button>
 				<button data-role="centrality">Network Centrality</button>
 				<button data-role="ladder">Ladder Flow</button>
 				<button data-role="diversity">Regional Diversity</button>
+				<button onclick="window.location.pathname = 'survey'" class>
+					⎘ Survey
+				</button>
 			</nav>
 
 			<!-- Home Section with 4 cards -->
@@ -104,23 +108,6 @@
 							by region.<br />
 						</p>
 					</div>
-					<!-- <div
-						class="card"
-						style="cursor: pointer"
-						onclick="window.open('https://github.com/kubernetes/kubernetes','_blank')">
-						<h2>Kubernetes Main Repository</h2>
-						<p>
-							Official Kubernetes source code and
-							documentation.<br />
-							<b>GitHub:</b>
-							<a
-								href="https://github.com/kubernetes/kubernetes"
-								target="_blank"
-								style="color: #60a5fa"
-								>github.com/kubernetes/kubernetes</a
-							><br />
-						</p>
-					</div> -->
 				</div>
 			</section>
 
@@ -157,55 +144,56 @@
 					<h2>Ladder Flow – Line</h2>
 					<div id="ladder-line" class="graph"></div>
 				</div>
-				<div class="card">
-					<h2>Ladder Flow – Area</h2>
-					<div id="ladder-area" class="graph"></div>
-				</div>
 			</section>
 
 			<section data-role="diversity">
 				<div class="card">
-					<h2>Regional Diversity – Bars</h2>
-					<div id="diversity-bars" class="graph"></div>
-				</div>
-				<div class="card">
-					<h2>Regional Diversity – Area</h2>
+					<h2>Regional Diversity</h2>
 					<div id="diversity-area" class="graph"></div>
 				</div>
 			</section>
 
-			<section data-role="layout" style="text-align: center">
-				<img
+			<section data-role="info" style="text-align: center">
+				<!-- <img
 					style="width: 95%; min-width: 1000px"
-					src="https://mermaid.ink/img/pako:eNp1U9FumzAU_RXrPpMI0gCBh0kdKFq1rpPSqQ8bU-XCbWIV7Opi1mVRpP3D_nBfUtuQNE3aJ9vnnnN8fG1voFQVQgr3tXoqV5w0-5YXkrFPqsEfBdihgJ87hI1GH9j5neq0qbmRfe7ukCRqbI95GUpNvBZ6bchXqJ8UPRyAx_RLXlVIhtpP2NwkOubk4hdS2zsucCmU5PULeOq47pN-NQRe1wMw0F6SOPJVdjtkNIK5ohJHuSAsNVZsKLwr_MipNaqDwnWpCFv2_-8_tuDywXhYzmAwHNBFnN9eComvT-1kFmaZvZE3VeeE_A2VhV-p9s1xwkW-y3raPac_SHmiHLZ8R3myc9_s_sVcZxcX9sXYcVe4EWjvFzxYkqggved1ix40SA23a9hYlwL0Cu0bTM204vYSCrk1okcuvyvVQKqpMzJS3XK1N-keK64xF3xJvNmjhNI0K1Od1JAGSeJMIN3Ab0ijYOwnURglfhRM4uTMg7XhTIJx5IdBEMdJPAuDMNp68Mft6o-TyJ9NpuF0Gs6m8dlk5gFWQiv60n8o96-2z8DMHQA?type=png" />
+					src="https://mermaid.ink/svg/pako:eNp1kt9OwjAUxl-lOdeD7C8buzDRLcQL5AK90hnSbIexsLXkrIhISHwH39AnsRsTEHU3bb9-v-_0dN1BKjOEEOal3KQLToo9xIlg7FZW-JRAMyTw_K2wXu-KRSgU8bJQW22YoNpIWp6Jl_YxzzIkbT1M2EhXuvTExQtSfUicYl5IwcuT2LlPJVpmEs264hoaSUqxFxeEqcKMdRv_gjecak2dbdynkrBmn-8fbMrFUmc0ni6gO3nbzWg2LgT-bKfFGplFzRV21PH8LTiNZ9eE_M8Gf_NgQE5FBuGclzUaUCFVvFnDrolOQC2w-TOhnma86TQRew2tuHiUsoJQ0VpjJNf54hiyXmVcYVzwnHh1VAmF7iOSa6EgtGzfbVMg3MGrXpte3zMt2zZ907Fsz4CtFh2r7weO5dpmMAxcx_f2Bry1Zc1-4Hum_uyBEwQDdzg0ALNCSbo7vLP2ue2_AMu_zrI" /> -->
+
+				<div
+					class="tutorial-container"
+					style="max-width: 600px; margin: auto">
+					<h2>Tutorial</h2>
+					<p>
+						Welcome to the interactive tutorial for the Kubernetes
+						Collaboration Dashboard. This demo walks you through the
+						key features available on each graph.
+					</p>
+					<ol style="text-align: left">
+						<li>
+							<strong>Tooltip Hover:</strong> Hover over data
+							points to see additional details.
+						</li>
+						<li>
+							<strong>Legend Interaction:</strong> Click on legend
+							items to toggle visibility.
+						</li>
+						<li>
+							<strong>Selection Rectangle:</strong> A demo will
+							highlight a range of data with a custom shape.
+						</li>
+						<li>
+							<strong>Replay Demo:</strong> Use the replay button
+							on each graph to run the tutorial demo again.
+						</li>
+					</ol>
+					<p>
+						If you'd rather explore on your own, click "skip
+						tutorial" to disable the demo.
+					</p>
+				</div>
 			</section>
 		</main>
 
 		<script>
-			// card switcher thing
-			function switchTab(tab) {
-				const tabs = document.querySelectorAll(
-					"#page-tabs button[data-role]"
-				);
-				const sections = document.querySelectorAll(
-					"main section[data-role]"
-				);
-				tabs.forEach((btn) => {
-					btn.classList.toggle(
-						"active",
-						btn.getAttribute("data-role") === tab
-					);
-				});
-				sections.forEach((sec) => {
-					if (sec.id !== "about-kubernetes") {
-						sec.classList.toggle(
-							"active",
-							sec.getAttribute("data-role") === tab
-						);
-					}
-				});
-			}
-
 			document.addEventListener("DOMContentLoaded", () => {
 				mermaid.initialize({ startOnLoad: true });
 

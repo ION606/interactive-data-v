@@ -1,0 +1,112 @@
+/* === base === */
+:root {
+	--gap: 1rem;
+	--radius: 0.5rem;
+	--bg-color: #121212;
+	--text-color: #e0e0e0;
+	--border-color: #444444;
+	--input-bg: #1e1e1e;
+	--input-border: #555555;
+	--button-bg: #0366d6;
+	--button-text: #ffffff;
+}
+
+body {
+	font-family: system-ui, sans-serif;
+	margin: var(--gap);
+	background-color: var(--bg-color);
+	color: var(--text-color);
+}
+
+h1,
+h2 {
+	margin-block: 0 0.5rem;
+}
+
+form {
+	display: grid;
+	gap: 2rem;
+}
+
+section {
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius);
+	padding: var(--gap);
+	background-color: #1a1a1a;
+}
+
+/* === grid fieldsets === */
+fieldset {
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	gap: var(--gap);
+	border: none;
+	margin-bottom: var(--gap);
+	width: fit-content;
+	max-width: 100%;
+}
+
+legend {
+	grid-column: 1 / -1;
+	font-weight: 600;
+	margin-bottom: 0.25rem;
+}
+
+label {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+	line-height: 1.4;
+}
+
+label input[type="text"],
+label input[type="number"],
+label textarea,
+select {
+	flex: 1 1 auto;
+	padding: 0.4rem;
+	border-radius: 0.25rem;
+	border: 1px solid var(--input-border);
+	background-color: var(--input-bg);
+	color: var(--text-color);
+}
+
+/* === follow-up blocks === */
+.followup {
+	grid-column: 1 / -1;
+	display: inline-grid;
+	overflow: hidden;
+	max-height: 0;
+	opacity: 0;
+	visibility: hidden;
+	transition: max-height 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.followup.open {
+	max-height: 500px;
+	opacity: 1;
+	visibility: visible;
+}
+
+.followup label {
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+textarea {
+	width: 100%;
+	min-height: 5rem;
+	resize: vertical;
+}
+
+/* === submit === */
+button[type="submit"] {
+	justify-self: start;
+	padding: 0.6rem 1.2rem;
+	border: none;
+	border-radius: var(--radius);
+	background: var(--button-bg);
+	color: var(--button-text);
+	font-size: 1rem;
+	cursor: pointer;
+}
