@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>plotly interactive-tour demo</title>
+
+		<script src="https://cdn.plot.ly/plotly-3.0.1.min.js" defer></script>
+		<style>
+			/* general layout */
+			body {
+				font-family: system-ui, sans-serif;
+				margin: 0;
+				padding: 1rem;
+				background: #111;
+				color: #ddd;
+			}
+
+			/* plot container */
+			#chart {
+				width: 90vw;
+				height: 60vh;
+				margin: 0 auto 1rem;
+				border: 2px solid #444;
+				border-radius: 0.5rem;
+			}
+
+			/* event log */
+			#log {
+				width: 90vw;
+				height: 10vh;
+				margin: 0 auto;
+				padding: 0.5rem;
+				background: #1a1a1a;
+				border: 1px solid #333;
+				overflow-y: auto;
+			}
+
+			/* fake cursor styling */
+			#fake-cursor {
+				position: fixed;
+				width: 24px;
+				height: 36px;
+				pointer-events: none;
+				z-index: 9999;
+				background: transparent;
+				transition: filter 0.2s;
+				filter: drop-shadow(0 2px 2px #0008);
+			}
+
+			/* Remove the img styling, since we use background now */
+			#fake-cursor img {
+				display: none;
+			}
+
+			#nextbtn {
+				display: none;
+				padding: 0.5rem 1rem;
+				border: none;
+				border-radius: 0.3rem;
+				background-color: #28a745;
+				color: #fff;
+				font-size: 1rem;
+				cursor: pointer;
+				transition: background-color 0.3s ease;
+				width: 10vw;
+				margin: auto;
+			}
+
+			#nextbtn:hover {
+				background-color: #218838;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Plotly Graph Interaction Tutorial</h1>
+
+		<div id="chart"></div>
+		<pre id="log" aria-label="event log"></pre>
+		<button id="nextbtn" onclick="window.location.pathname = '/part2'">
+			Next!
+		</button>
+
+		<!-- fake cursor element -->
+		<div id="fake-cursor">
+			<svg>
+				<path
+					d="M17.2607 12.4008C19.3774 11.2626 20.4357 10.6935 20.7035 10.0084C20.9359 9.41393 20.8705 8.74423 20.5276 8.20587C20.1324 7.58551 18.984 7.23176 16.6872 6.52425L8.00612 3.85014C6.06819 3.25318 5.09923 2.95471 4.45846 3.19669C3.90068 3.40733 3.46597 3.85584 3.27285 4.41993C3.051 5.06794 3.3796 6.02711 4.03681 7.94545L6.94793 16.4429C7.75632 18.8025 8.16052 19.9824 8.80519 20.3574C9.36428 20.6826 10.0461 20.7174 10.6354 20.4507C11.3149 20.1432 11.837 19.0106 12.8813 16.7454L13.6528 15.0719C13.819 14.7113 13.9021 14.531 14.0159 14.3736C14.1168 14.2338 14.2354 14.1078 14.3686 13.9984C14.5188 13.8752 14.6936 13.7812 15.0433 13.5932L17.2607 12.4008Z"
+					stroke="black"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round" />
+			</svg>
+		</div>
+
+		<script type="module">
+			localStorage.setItem("tutorialDone", "true");
+
+			const chart = document.querySelector("#chart"),
+				log = document.querySelector("#log"),
+				cursor = document.querySelector("#fake-cursor"),
+				wait = (ms) => {
+					return new Promise((resolve) => setTimeout(resolve, ms));
+				};
+
+			cursor.style.left = "0px";
+			cursor.style.top = "0px";
+
+			/* helper to log events */
+			const write = (msg) => {
+				log.textContent += `${msg}\n`;
+				log.scrollTop = log.scrollHeight;
+			};
+
+			/* sample data */
+			const trace1 = {
+				x: Array.from({ length: 20 }, (_, i) => i),
+				y: Array.from({ length: 20 }, () => Math.random() * 10 + 5),
+				mode: "markers",
+				type: "scatter",
+				name: "series A",
+				marker: { size: 8 },
+			};
+
+			const trace2 = {
+				x: Array.from({ length: 20 }, (_, i) => i),
+				y: Array.from({ length: 20 }, () => Math.random() * 10),
+				mode: "markers",
+				type: "scatter",
+				name: "series B",
+				marker: { size: 8 },
+			};
+
+			/* layout with dragmode = 'select' so the box tool is active */
+			const layout = {
+				title: "demo plot",
+				dragmode: "select", // activates box selection by default
+				plot_bgcolor: "#222",
+				paper_bgcolor: "#222",
+				font: { color: "#ddd" },
+			};
+
+			await Plotly.newPlot(chart, [trace1, trace2], layout);
+
+			/* ---- event listeners ---- */
+			chart.on("plotly_hover", () => write("🟢 hover event fired"));
+			chart.on("plotly_selected", () =>
+				write("🔵 box-select event fired")
+			);
+			chart.on("plotly_restyle", () =>
+				write("🟡 legend click toggled a trace")
+			);
+
+			/* ---- fake cursor animation helpers ---- */
+			const moveCursor = async (x, y, ms = 600) => {
+				const start = cursor.getBoundingClientRect(),
+					dx = x - start.left,
+					dy = y - start.top,
+					startTime = performance.now();
+
+				return new Promise((resolve) => {
+					const step = (now) => {
+						const t = Math.min((now - startTime) / ms, 1);
+
+						cursor.style.left = `${start.left + dx * t}px`;
+						cursor.style.top = `${start.top + dy * t}px`;
+
+						if (t < 1) requestAnimationFrame(step);
+						else resolve();
+					};
+
+					requestAnimationFrame(step);
+				});
+			};
+
+			const clickCursor = async (ms = 1000) => {
+				const path = cursor.querySelector("path"),
+					prev = path.getAttribute("stroke");
+
+				path.setAttribute("stroke", "red");
+				await wait(ms);
+				path.setAttribute("stroke", prev);
+			};
+
+			/* ---- main guided-tour routine ---- */
+			const tour = async () => {
+				/* get bounding boxes for positioning */
+				const plotRect = chart.getBoundingClientRect(),
+					legend = chart.querySelector(".legend"),
+					randpoints = Array.from(
+						document.querySelectorAll(".point")
+					).filter(
+						(point) => point.style.fill === "rgb(31, 119, 180)"
+					),
+					randi = Math.floor(Math.random() * randpoints.length),
+					pointElem = randpoints[randi];
+
+				// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+				const pointNumber = parseInt(
+					pointElem.getAttribute("data-point-number") || randi,
+					10
+				);
+
+				/* step 1: hover over a point */
+				let { x, y } = pointElem.getBoundingClientRect();
+				await moveCursor(x, y);
+
+				await Plotly.Fx.hover(chart, [{ curveNumber: 0, pointNumber }]);
+				write("🟢 hover event fired");
+				cursor.querySelector("path").setAttribute("stroke", "green");
+
+				await wait(2000);
+				cursor.querySelector("path").setAttribute("stroke", "black");
+
+				/* step 2: draw a box selection */
+				// real plot offsets + size ------------------
+				const xAxis = chart._fullLayout.xaxis,
+					yAxis = chart._fullLayout.yaxis;
+
+				const plotLeft = plotRect.left,
+					plotTop = plotRect.top,
+					plotWidth = plotRect.width,
+					plotHeight = plotRect.height;
+
+				const x0 = plotLeft + plotWidth * 0.25,
+					y0 = plotTop + plotHeight * 0.45,
+					x1 = plotLeft + plotWidth * 0.55,
+					y1 = plotTop + plotHeight * 0.15;
+
+				// remove hover effect and go to the starting corner first
+				await Plotly.Fx.hover(chart, []);
+
+				// synthetic mousedown at the start point
+				document.elementFromPoint(x0, y0)?.dispatchEvent(
+					new PointerEvent("pointerdown", {
+						bubbles: true,
+						clientX: x0,
+						clientY: y0,
+					})
+				);
+
+				// synthetic mouseup at the end point
+				document.elementFromPoint(x1, y1)?.dispatchEvent(
+					new PointerEvent("pointerup", {
+						bubbles: true,
+						clientX: x1,
+						clientY: y1,
+					})
+				);
+
+				/* ensure the selection outline is visible */
+				const pxToData = (axis, px) => {
+					// translate page-pixel into "inside-subplot" pixel, then convert
+					const localPx = px - axis._offset;
+					return axis.p2d
+						? axis.p2d(localPx) // present on date / category axes
+						: axis.p2c(localPx); // present on linear / log axes
+				};
+
+				const x0Data = pxToData(chart._fullLayout.xaxis, x0),
+					x1Data = pxToData(chart._fullLayout.xaxis, x1),
+					y0Data = pxToData(chart._fullLayout.yaxis, y0),
+					y1Data = pxToData(chart._fullLayout.yaxis, y1);
+
+				await moveCursor(x0, y0, 600);
+				cursor.querySelector("path").setAttribute("stroke", "red");
+
+				await Plotly.relayout(chart, {
+					selections: [
+						{
+							type: "rect",
+							xref: "x",
+							yref: "y",
+							x0: x0Data,
+							x1: x0Data, // start with zero width
+							y0: y0Data,
+							y1: y0Data, // start with zero height
+							line: { dash: "dot", width: 0 },
+							opacity: 0.6,
+						},
+					],
+				});
+
+				const steps = 40;
+				for (let i = 1; i <= steps; i += 1) {
+					// fraction of the way through the animation
+					const tPrev = (i - 1) / steps,
+						t = i / steps;
+
+					/* 1) data-space corner for the rectangle ------------------------ */
+					const x1DataCurrent = x0Data + (x1Data - x0Data) * t,
+						y1DataCurrent = y0Data + (y1Data - y0Data) * t;
+
+					/* 2) equivalent pixel-space point for the cursor ---------------- */
+					const xPxPrev = x0 + (x1 - x0) * tPrev,
+						yPxPrev = y0 + (y1 - y0) * tPrev,
+						xPxCurrent = x0 + (x1 - x0) * t,
+						yPxCurrent = y0 + (y1 - y0) * t;
+
+					await Plotly.relayout(chart, {
+						selections: [
+							{
+								type: "rect",
+								xref: "x",
+								yref: "y",
+								x0: x0Data,
+								y0: y0Data,
+								x1: x1DataCurrent,
+								y1: y1DataCurrent,
+								line: { dash: "dot", width: i == 0 ? 0 : 1 },
+								opacity: i == 0 ? 0 : 0.6,
+							},
+						],
+					});
+
+					const { x, y, width, height } = document
+						.querySelector(".selectionlayer")
+						.getBoundingClientRect();
+
+					await moveCursor(x + width, y, 50);
+
+					if (i === 1) write("🟠 click event fired");
+				}
+
+				await Plotly.relayout(chart, {
+					selections: [
+						{
+							type: "rect",
+							xref: "x",
+							yref: "y",
+							x0: x0Data,
+							y0: y0Data,
+							x1: x1Data,
+							y1: y1Data,
+							line: { dash: "dot", width: 1 },
+							opacity: 0.6,
+						},
+					],
+				});
+
+				cursor.querySelector("path").setAttribute("stroke", "black");
+				await wait(1500);
+
+				/* step 3: click the first legend entry */
+				const legendRect = legend.getBoundingClientRect(),
+					legendItems = Array.from(
+						legend.querySelectorAll(".legendtoggle")
+					),
+					i = Math.floor(legendItems.length * Math.random()),
+					lx = legendRect.left + legendRect.width / 2,
+					ly = legendItems[i].getBoundingClientRect().y;
+
+				await moveCursor(lx, ly);
+
+				// click the legend
+				await wait(300);
+
+				clickCursor(300).then(async () =>
+					wait(700).then(() => cursor.remove())
+				);
+
+				await Plotly.restyle(chart, { visible: "legendonly" }, [i]);
+				write("✅ tour finished — interact yourself!");
+
+				document.querySelector("#nextbtn").style.display = "block";
+			};
+
+			await wait(500); // wait a moment for plotly to finish rendering
+			await tour();
+		</script>
+	</body>
+</html>
