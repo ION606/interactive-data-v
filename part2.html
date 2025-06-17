@@ -195,12 +195,41 @@
 			</section>
 		</main>
 
+		<!-- Tutorial Modal -->
+		<div id="tutorial-modal">
+			<div>
+				<h2>View Tutorial?</h2>
+				<p>Would you like to view a tutorial for the dashboard?</p>
+				<div style="margin-top: 2rem">
+					<button id="tutorial-yes" style="margin-right: 1rem">
+						Yes
+					</button>
+					<button id="tutorial-no">Skip Tutorial</button>
+				</div>
+			</div>
+		</div>
+
 		<script>
+			const main = document.querySelector("main");
+			const modal = document.getElementById("tutorial-modal");
+			const yesBtn = document.getElementById("tutorial-yes");
+			const noBtn = document.getElementById("tutorial-no");
+
+			// Only show modal if tutorial not done
 			if (!localStorage.getItem("tutorialDone")) {
-				if (confirm("Would you like to view a tutorial?")) {
-					window.location.pathname = "tutorial";
-				} else localStorage.setItem("tutorialDone", "true");
+				main.style.display = "none";
+				modal.style.display = "flex";
 			}
+
+			yesBtn?.addEventListener("click", () => {
+				window.location.pathname = "tutorial";
+			});
+
+			noBtn?.addEventListener("click", () => {
+				localStorage.setItem("tutorialDone", "true");
+				modal.style.display = "none";
+				main.style.display = "";
+			});
 
 			document.addEventListener("DOMContentLoaded", () => {
 				mermaid.initialize({ startOnLoad: true });

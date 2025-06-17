@@ -302,3 +302,58 @@ text {
 	background: #6366f1;
 	transform: scale(1.05);
 }
+
+#tutorial-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.7);
+	display: none;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+
+#tutorial-modal>div {
+	background: #1e293b;
+	color: #fff;
+	padding: 2rem 2.5rem;
+	border-radius: 1rem;
+	box-shadow: 0 4px 32px #0008;
+	max-width: 400px;
+	text-align: center;
+}
+
+#tutorial-yes,
+#tutorial-no {
+	padding: 0.5rem 1rem;
+	border: none;
+	border-radius: 0.5rem;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background 0.3s, transform 0.2s;
+}
+
+#tutorial-yes {
+	background: #4f46e5;
+	color: #fff;
+}
+
+#tutorial-yes:hover,
+#tutorial-yes:focus {
+	background: #6366f1;
+	transform: scale(1.05);
+}
+
+#tutorial-no {
+	background: #334155;
+	color: #f1f5f9;
+}
+
+#tutorial-no:hover,
+#tutorial-no:focus {
+	background: #757575;
+	transform: scale(1.05);
+}
