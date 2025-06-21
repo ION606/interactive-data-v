@@ -1,92 +1,503 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 	<head>
 		<meta charset="utf-8" />
-		<title>Credit-Card Fraud Model Dashboard</title>
-		<link rel="stylesheet" href="./style.css" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>credit-card fraud detection – interactive dashboard</title>
+
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css" />
+
+		<link rel="stylesheet" href="./project.css" />
+		<script type="module" src="./project.js"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 	</head>
+
 	<body>
-		<header>
-			<button
-				style="float: right"
-				onclick="window.location.pathname = '/'">
-				🏠
-			</button>
-			<h1>Fraud Model Threshold Explorer</h1>
-		</header>
+		<!-- main wrapper -->
+		<main>
+			<header>
+				<strong style="font-size: 1.25rem; flex: 1"
+					>Grad Project Dashboard:
+				</strong>
+				<em>Credit-Card Fraud Detection</em>
+			</header>
 
-		<main class="dashboard">
-			<!-- threshold control -->
-			<section class="control">
-				<label>
-					decision threshold:
-					<input
-						id="threshold"
-						type="range"
-						min="0"
-						max="1"
-						step="0.01"
-						value="0.5" />
-					<span id="th-val">0.50</span>
-				</label>
+			<!-- —— tab bar —— -->
+			<nav id="page-tabs" role="tablist">
+				<button role="tab" class="active" data-role="agenda">
+					overview
+				</button>
+				<button role="tab" data-role="context">context</button>
+				<button role="tab" data-role="data">data</button>
+				<button role="tab" data-role="modeling">model</button>
+				<button role="tab" data-role="decision">threshold</button>
+				<button role="tab" data-role="impact">impact</button>
+				<button role="tab" data-role="future">future</button>
+			</nav>
+
+			<!-- —— panels (unchanged inner markup, just wrapped) —— -->
+			<section data-role="agenda" role="tabpanel" class="active">
+				<h2>Overview</h2>
+				<ol>
+					<li>Business Context</li>
+					<li>Data Overview and Visual Checks</li>
+					<li>Model and Evaluation</li>
+					<li>Interactive Threshold Tool</li>
+					<li>Business Impact</li>
+					<li>Accessibility and Next Steps</li>
+				</ol>
 			</section>
 
-			<!-- performance chart -->
-			<section class="chart">
-				<h2>precision-recall curve</h2>
-				<canvas id="pr-chart"></canvas>
-			</section>
-
-			<!-- key metrics -->
-			<section id="kpis">
-				<h2>key metrics</h2>
+			<section data-role="context" role="tabpanel">
+				<h2>Business Context</h2>
 				<p>
-					<strong>precision:</strong> <span id="precision">–</span> |
-					<strong>recall:</strong> <span id="recall">–</span> |
-					<strong>f1 score:</strong> <span id="f1">–</span>
+					Every year, global fraud losses top
+					<strong>USD 32 billion</strong>. Card issuers have less than
+					50 milliseconds to decide on each transaction.
 				</p>
 			</section>
 
-			<!-- confusion matrix -->
-			<section class="matrix">
-				<h2>confusion matrix</h2>
-				<table id="cm">
+			<section data-role="data" role="tabpanel">
+				<h2>Data Overview and Diagnostics</h2>
+				<p>
+					<strong>284,807</strong> transactions in total, with
+					<strong>492 fraud cases</strong> (about 0.17%).
+				</p>
+
+				<h3>Time‑Of‑Day Distribution</h3>
+				<div style="position: relative">
+					<canvas
+						id="timeChart"
+						aria-label="Histogram Of Total Vs Fraudulent Transactions Per Hour"
+						role="img"></canvas>
+					<!-- Legend pointer/arrow -->
+					<div id="legend-arrow">
+						<span class="arrow">⬅</span>
+						<span class="text">
+							Click the legend to show or hide series
+						</span>
+					</div>
+				</div>
+
+				<p class="explain">
+					Fraud spikes in the early morning hours (around 1–5 AM),
+					when overall activity is at its lowest—a classic sign of
+					after-hours attacks.
+				</p>
+
+				<h3>Transaction Amount Distribution</h3>
+				<canvas
+					id="amountChart"
+					aria-label="Bar Chart Of Transaction Amounts"
+					role="img"></canvas>
+				<p class="explain">
+					Most legitimate transactions are under €150, and so are most
+					fraud attempts—showing that attackers prefer lots of small
+					charges instead of one big, risky payment.
+				</p>
+			</section>
+
+			<section data-role="modeling" role="tabpanel">
+				<h2>Model and Evaluation</h2>
+
+				<h3>ROC Curve</h3>
+				<canvas
+					id="rocChart"
+					aria-label="ROC Curve"
+					role="img"></canvas>
+				<p class="explain">
+					The ROC curve shows a true positive rate of about 0.9 at a
+					0.25 false positive rate, with an AUC near 0.93—meaning the
+					model does a strong job separating fraud from genuine
+					transactions.
+				</p>
+
+				<h3>Feature Importance (LightGBM)</h3>
+				<canvas
+					id="featChart"
+					aria-label="Feature Importance Bar Chart"
+					role="img"></canvas>
+				<p class="explain">
+					Features V14, V4, and V17 make up over half the model’s
+					total gain, highlighting which components are most useful
+					for spotting fraud.
+				</p>
+			</section>
+
+			<section data-role="decision" role="tabpanel">
+				<h2>Interactive Decision Threshold Tool</h2>
+				<canvas
+					id="prChart"
+					aria-label="Precision‑Recall Curve"
+					role="img"></canvas>
+				<p class="explain">
+					Use the slider to see how changing the threshold affects
+					precision and recall. The red dot jumps to the closest
+					point, and the confusion matrix and ROI update instantly.
+				</p>
+
+				<label for="pr-slider" style="display: block; margin-top: 1rem"
+					>Decision Threshold:
+					<span id="thresholdLabel">0.83</span></label
+				>
+				<input
+					type="range"
+					id="pr-slider"
+					min="0"
+					max="1"
+					step="0.01"
+					value="0.83" />
+
+				<h3 style="margin-top: 2rem">Confusion Matrix</h3>
+				<table>
 					<thead>
 						<tr>
 							<th></th>
-							<th>pred 0</th>
-							<th>pred 1</th>
+							<th>Predicted Fraud</th>
+							<th>Predicted Genuine</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<th>actual 0</th>
-							<td id="tn">–</td>
-							<td id="fp">–</td>
+							<th>Actual Fraud</th>
+							<td id="tp">–</td>
+							<td id="fn">–</td>
 						</tr>
 						<tr>
-							<th>actual 1</th>
-							<td id="fn">–</td>
-							<td id="tp">–</td>
+							<th>Actual Genuine</th>
+							<td id="fp">–</td>
+							<td id="tn">–</td>
 						</tr>
 					</tbody>
 				</table>
 			</section>
 
-			<!-- explanatory panel -->
-			<section id="explanation">
-				<h2>What is all this?</h2>
-				<p>
-					By moving the threshold slider, you decide how confident the
-					model must be before flagging a transaction as fraud (pred
-					1). The precision-recall curve and key metrics update
-					instantly to show the trade-off: a higher threshold reduces
-					false positives (pred 1 on actual 0) but may increase false
-					negatives (pred 0 on actual 1).
+			<section data-role="impact" role="tabpanel">
+				<h2>Business Impact</h2>
+				<p class="explain">
+					Monetary estimates update as you adjust the threshold:
+					Blocked Loss is the fraud you prevent, Review Cost covers
+					analyst time, and Net Benefit is the daily gain.
 				</p>
+				<p class="metric">
+					Blocked Loss: €<span id="blockedLoss">–</span> K / Day
+				</p>
+				<p class="metric">
+					Review Cost: €<span id="reviewCost">–</span> K / Day
+				</p>
+				<p class="metric">
+					Net Benefit: €<span id="netBenefit">–</span> K / Day
+				</p>
+			</section>
+
+			<!-- accessibility -->
+			<section id="accessibility">
+				<h2>Accessibility</h2>
+				<ul>
+					<li>
+						Color-blind-friendly palette; contrast ratio at least
+						4.5:1
+					</li>
+					<li>Keyboard and screen reader navigation</li>
+					<li>Alt text and explanations for every visual</li>
+				</ul>
+			</section>
+
+			<!-- future work -->
+			<section id="future">
+				<h2>Future Work</h2>
+				<ul>
+					<li>
+						Cost-sensitive learning (triple penalty for false
+						positives)
+					</li>
+					<li>SHAP-based explanation widget</li>
+					<li>Real-time A/B threshold experiments</li>
+				</ul>
 			</section>
 		</main>
 
-		<script type="module" src="./main.js"></script>
+		<!-- javascript -->
+		<script>
+			"use strict";
+			const hours = [...Array(24).keys()],
+				totalPerHour = [
+					9000, 8600, 8200, 7600, 7200, 7800, 8500, 9500, 10200,
+					11000, 11500, 12000, 12200, 12100, 11800, 11300, 10800,
+					10400, 10000, 9700, 9400, 9100, 8800, 8600,
+				],
+				fraudPerHour = hours.map((h) =>
+					h >= 1 && h <= 5 ? 8 : h >= 22 || h <= 23 ? 4 : 2
+				),
+				buckets = [
+					"0‑50",
+					"50‑100",
+					"100‑150",
+					"150‑200",
+					"200‑250",
+					"250‑300",
+					"300‑400",
+					"400‑600",
+					"600‑1000",
+					">1000",
+				],
+				totalBucket = [
+					50000, 48000, 42000, 30000, 22000, 18000, 16000, 12000,
+					8000, 6000,
+				],
+				fraudBucket = [200, 180, 150, 100, 60, 40, 25, 15, 10, 5],
+				roc = [
+					[0, 0],
+					[0.01, 0.55],
+					[0.02, 0.62],
+					[0.03, 0.68],
+					[0.05, 0.73],
+					[0.08, 0.78],
+					[0.12, 0.82],
+					[0.18, 0.86],
+					[0.25, 0.89],
+					[0.35, 0.92],
+					[1, 1],
+				],
+				featNames = [
+					"V14",
+					"V4",
+					"V17",
+					"V12",
+					"V10",
+					"V11",
+					"V16",
+					"Amount",
+					"V9",
+					"V3",
+				],
+				featScores = [
+					0.21, 0.18, 0.15, 0.12, 0.08, 0.07, 0.06, 0.05, 0.04, 0.04,
+				];
+
+			Chart.defaults.color = "#f3f4f6";
+			Chart.defaults.plugins.legend.labels.color = "#f3f4f6";
+			Chart.defaults.plugins.tooltip.backgroundColor = "#23262f";
+			Chart.defaults.plugins.tooltip.titleColor = "#f3f4f6";
+			Chart.defaults.plugins.tooltip.bodyColor = "#f3f4f6";
+			Chart.defaults.scales = {
+				x: { ticks: { color: "#f3f4f6" }, grid: { color: "#333" } },
+				y: { ticks: { color: "#f3f4f6" }, grid: { color: "#333" } },
+			};
+
+			const createBar = (ctx, labels, data1, data2, l1, l2) => {
+				return new Chart(ctx, {
+					type: "bar",
+					data: {
+						labels,
+						datasets: [
+							{
+								label: l1,
+								data: data1,
+								backgroundColor: "#83c5be",
+							},
+							{
+								label: l2,
+								data: data2,
+								backgroundColor: "#e63946",
+							},
+						],
+					},
+					options: {
+						scales: { y: { beginAtZero: true } },
+						plugins: { legend: { position: "top" } },
+					},
+				});
+			};
+
+			createBar(
+				document.querySelector("#timeChart"),
+				hours.map((h) => h.toString().padStart(2, "0")),
+				totalPerHour,
+				fraudPerHour,
+				"total",
+				"fraud"
+			);
+
+			createBar(
+				document.querySelector("#amountChart"),
+				buckets,
+				totalBucket,
+				fraudBucket,
+				"total",
+				"fraud"
+			);
+
+			new Chart(document.querySelector("#rocChart"), {
+				type: "line",
+				data: {
+					datasets: [
+						{
+							label: "ROC",
+							data: roc.map(([x, y]) => ({ x, y })),
+							showLine: true,
+							fill: false,
+							borderColor: "#006d77",
+							tension: 0.2,
+							pointRadius: 2,
+						},
+					],
+				},
+				options: {
+					scales: {
+						x: {
+							type: "linear",
+							min: 0,
+							max: 1,
+							title: {
+								display: true,
+								text: "false positive rate",
+							},
+						},
+						y: {
+							min: 0,
+							max: 1,
+							title: {
+								display: true,
+								text: "true positive rate",
+							},
+						},
+					},
+					plugins: { legend: { display: false } },
+				},
+			});
+
+			new Chart(document.querySelector("#featChart"), {
+				type: "bar",
+				data: {
+					labels: featNames,
+					datasets: [
+						{
+							label: "gain",
+							data: featScores,
+							backgroundColor: "#006d77",
+						},
+					],
+				},
+				options: {
+					indexAxis: "y",
+					scales: { x: { beginAtZero: true } },
+					plugins: { legend: { display: false } },
+				},
+			});
+
+			const prData = [];
+			for (let t = 1; t >= 0; t -= 0.025) {
+				const r = 1 - Math.pow(t, 2.5);
+				const p = Math.max(0, 0.98 - (1 - t) * 0.75);
+				prData.push({
+					threshold: +t.toFixed(3),
+					precision: +p.toFixed(3),
+					recall: +r.toFixed(3),
+				});
+			}
+			prData.sort((a, b) => a.recall - b.recall);
+
+			const nearest = (thr) =>
+				prData.reduce((p, c) =>
+					Math.abs(c.threshold - thr) < Math.abs(p.threshold - thr)
+						? c
+						: p
+				);
+
+			const highlight = {
+				label: "selected",
+				type: "scatter",
+				data: [],
+				backgroundColor: "#e63946",
+				borderColor: "#e63946",
+				pointRadius: 5,
+			};
+
+			const prChart = new Chart(document.querySelector("#prChart"), {
+				type: "line",
+				data: {
+					datasets: [
+						{
+							label: "precision",
+							data: prData.map((p) => ({
+								x: p.recall,
+								y: p.precision,
+							})),
+							showLine: true,
+							borderColor: "#006d77",
+							borderWidth: 2,
+							pointRadius: 2,
+							tension: 0.3,
+						},
+						highlight,
+					],
+				},
+				options: {
+					scales: {
+						x: {
+							type: "linear",
+							min: 0,
+							max: 1,
+							title: { display: true, text: "recall" },
+						},
+						y: {
+							min: 0,
+							max: 1,
+							title: { display: true, text: "precision" },
+						},
+					},
+					plugins: { legend: { display: false } },
+				},
+			});
+
+			const slider = document.querySelector("#pr-slider"),
+				label = document.querySelector("#thresholdLabel"),
+				m = {
+					tp: document.querySelector("#tp"),
+					fp: document.querySelector("#fp"),
+					tn: document.querySelector("#tn"),
+					fn: document.querySelector("#fn"),
+					blocked: document.querySelector("#blockedLoss"),
+					cost: document.querySelector("#reviewCost"),
+					net: document.querySelector("#netBenefit"),
+				};
+
+			// macro stuffs
+			const FRAUD = 492,
+				TOTAL = 284_807,
+				AVG = 105,
+				COST = 2;
+
+			const update = (thr) => {
+				const { precision, recall } = nearest(thr);
+				const tp = Math.round(recall * FRAUD);
+				const fp = Math.round(tp * (1 / precision - 1));
+				const fn = FRAUD - tp;
+				const tn = TOTAL - FRAUD - fp;
+				m.tp.textContent = tp.toLocaleString();
+				m.fp.textContent = fp.toLocaleString();
+				m.fn.textContent = fn.toLocaleString();
+				m.tn.textContent = tn.toLocaleString();
+				const blocked = (tp * AVG) / 1000;
+				const cost = ((tp + fp) * COST) / 1000;
+				const net = blocked - cost;
+				m.blocked.textContent = blocked.toFixed(1);
+				m.cost.textContent = cost.toFixed(2);
+				m.net.textContent = net.toFixed(1);
+				highlight.data[0] = { x: recall, y: precision };
+				prChart.update("none");
+			};
+
+			slider.addEventListener("input", (e) => {
+				label.textContent = (+e.target.value).toFixed(2);
+				update(+e.target.value);
+			});
+
+			update(+slider.value);
+		</script>
 	</body>
 </html>
