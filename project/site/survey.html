@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Credit-Fraud Dashboard — Tester Survey</title>
+
+		<link rel="stylesheet" href="project.css" />
+		<script type="module" src="survey.js"></script>
+	</head>
+
+	<body class="p-4">
+		<h1 class="text-3xl font-bold mb-2">Prototype Tester Survey</h1>
+
+		<form id="surveyForm" novalidate>
+			<!-- 1 · demographics / knowledge / interest ------------------------ -->
+			<section>
+				<h2>1 · About You and the Topic</h2>
+
+				<!-- age (multiple-choice) -->
+				<fieldset>
+					<legend>Your Age Range</legend>
+					<label
+						><input
+							type="radio"
+							name="age"
+							value="15–20"
+							required />15–20</label
+					>
+					<label
+						><input
+							type="radio"
+							name="age"
+							value="21–30" />21–30</label
+					>
+					<label
+						><input
+							type="radio"
+							name="age"
+							value="31–40" />31–40</label
+					>
+					<label
+						><input type="radio" name="age" value="41+" />Over
+						40</label
+					>
+				</fieldset>
+
+				<!-- gender (multiple-choice) -->
+				<fieldset>
+					<legend>Gender (Select One)</legend>
+					<label
+						><input
+							type="radio"
+							name="gender"
+							value="female"
+							required />Female</label
+					>
+					<label
+						><input
+							type="radio"
+							name="gender"
+							value="male" />Male</label
+					>
+					<label
+						><input
+							type="radio"
+							name="gender"
+							value="non-binary" />Non-binary / Other</label
+					>
+					<label
+						><input
+							type="radio"
+							name="gender"
+							value="prefer-not" />Prefer Not to Say</label
+					>
+				</fieldset>
+
+				<!-- education (multiple-choice) -->
+				<fieldset>
+					<legend>Highest Completed Education</legend>
+					<label
+						><input
+							type="radio"
+							name="education"
+							value="high-school"
+							required />High School</label
+					>
+					<label
+						><input
+							type="radio"
+							name="education"
+							value="bachelor" />Bachelor’s</label
+					>
+					<label
+						><input
+							type="radio"
+							name="education"
+							value="masters" />Master’s</label
+					>
+					<label
+						><input type="radio" name="education" value="phd" />PhD
+						or Higher</label
+					>
+				</fieldset>
+
+				<!-- topic familiarity (likert) -->
+				<fieldset>
+					<legend>
+						I am familiar with credit-card fraud detection tools.
+					</legend>
+					<div class="likert" data-name="familiarity"></div>
+				</fieldset>
+
+				<!-- topic interest (likert) -->
+				<fieldset>
+					<legend>
+						Before today, I was interested in fraud-risk analytics.
+					</legend>
+					<div class="likert" data-name="interest"></div>
+				</fieldset>
+			</section>
+
+			<!-- 2 · dashboard usability evaluation ----------------------------- -->
+			<section>
+				<h2>2 · Evaluate the Dashboard</h2>
+
+				<!-- 10 likert items, numbered for your analysis -->
+				<template id="likertFive">
+					<label><input type="radio" value="1" required />1</label>
+					<label><input type="radio" value="2" />2</label>
+					<label><input type="radio" value="3" />3</label>
+					<label><input type="radio" value="4" />4</label>
+					<label><input type="radio" value="5" />5</label>
+				</template>
+
+				<fieldset>
+					<legend>
+						The colours helped me distinguish normal vs fraudulent
+						transactions.
+					</legend>
+					<div class="likert" data-name="colour_help"></div>
+				</fieldset>
+
+				<fieldset>
+					<legend>
+						The tooltip showed enough detail for precise values.
+					</legend>
+					<div class="likert" data-name="tooltip_detail"></div>
+				</fieldset>
+
+				<fieldset>
+					<legend>
+						The threshold slider made it clear how precision and
+						recall change.
+					</legend>
+					<div class="likert" data-name="slider_clarity"></div>
+				</fieldset>
+
+				<fieldset>
+					<legend>
+						Legend interactions (click to hide/show) were easy to
+						discover.
+					</legend>
+					<div class="likert" data-name="legend_discover"></div>
+				</fieldset>
+
+				<fieldset>
+					<legend>Filtering by hour of day felt responsive.</legend>
+					<div class="likert" data-name="filter_responsive"></div>
+				</fieldset>
+
+				<fieldset>
+					<legend>
+						Chart titles accurately described the data shown.
+					</legend>
+					<div class="likert" data-name="titles_accuracy"></div>
+				</fieldset>
+
+				<fieldset>
+					<legend>
+						The dashboard layout guided me from overview to details.
+					</legend>
+					<div class="likert" data-name="layout_flow"></div>
+				</fieldset>
+
+				<fieldset>
+					<legend>
+						I understood the meaning of the net-benefit metric.
+					</legend>
+					<div class="likert" data-name="netbenefit_understand"></div>
+				</fieldset>
+
+				<fieldset>
+					<legend>
+						Loading times did not interrupt my analysis.
+					</legend>
+					<div class="likert" data-name="loading_ok"></div>
+				</fieldset>
+
+				<fieldset>
+					<legend>Overall, the dashboard met my expectations.</legend>
+					<div class="likert" data-name="overall_expect"></div>
+				</fieldset>
+			</section>
+
+			<button type="submit">Submit</button>
+			<p id="status" class="text-sm mt-2"></p>
+		</form>
+	</body>
+</html>
