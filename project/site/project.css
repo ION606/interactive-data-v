@@ -248,9 +248,9 @@ form#surveyForm button[type="submit"]:hover {
 }
 
 .likert input[type="radio"]:checked,
-.checked {
+form#surveyForm label.checked {
 	accent-color: var(--checked);
-	background-color: var(--checked);
+	background-color: var(--checked) !important;
 }
 
 .likert label:hover {
