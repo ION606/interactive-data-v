@@ -1,6 +1,14 @@
 const tabBar = document.querySelector('#page-tabs'),
 	buttons = tabBar.querySelectorAll('button'),
-	panels = document.querySelectorAll('section[data-role]');
+	panels = document.querySelectorAll('section[data-role]'),
+	timeChart = document.querySelector('#timeChart'),
+	arrow = document.querySelector('#legend-arrow');
+
+const t = () => {
+	arrow.remove();
+	timeChart.removeEventListener('click', t);
+}
+[timeChart, arrow].map(el => el.addEventListener('click', t))
 
 function activate(role) {
 	/* toggle classes and aria */
