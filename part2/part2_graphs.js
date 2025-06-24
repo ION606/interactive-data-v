@@ -1,16 +1,20 @@
 import {
-	select,
-	scaleLinear,
-	scaleBand,
-	max,
-	forceSimulation,
-	forceLink,
-	forceManyBody,
-	forceCenter,
-	drag,
+        select,
+        scaleLinear,
+        scaleBand,
+        scaleSequential,
+        interpolateBlues,
+        max,
+        forceSimulation,
+        forceLink,
+        forceManyBody,
+        forceCenter,
+        drag,
 } from 'https://cdn.skypack.dev/d3@7';
 
-let useCircleLayout = false;
+let useCircleLayout = false,
+    selectedNodeName = null,
+    minCentrality = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
 	initCharts();
@@ -26,7 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
 			drawCentralityNetwork();
 		});
 
-	window.addEventListener('resize', drawCentralityNetwork);
+        window.addEventListener('resize', drawCentralityNetwork);
+
+        const filterSlider = document.getElementById('centrality-filter');
+        if (filterSlider) {
+                filterSlider.addEventListener('input', () => {
+                        minCentrality = +filterSlider.value;
+                        drawCentralityNetwork();
+                });
+        }
 
 	const homeGrid = document.getElementById('homegrid');
 	if (homeGrid) {
@@ -152,12 +164,17 @@ function drawCentralityNetwork() {
 		.attr('transform', `translate(0, ${heightBars})`);
 	const yAxisGroup = svgBars.append('g');
 
-	// use centralityData for nodes, and generate links randomly
-	const nodes = centralityData.map((d, i) => ({
-		id: `node-${i + 1}`,
-		name: `Node ${i + 1}`,
-		centrality: d.centrality
-	}));
+        // use centralityData for nodes, filter by slider value
+        const nodes = centralityData
+                .filter(d => d.centrality >= minCentrality)
+                .map((d, i) => ({
+                        id: `node-${i + 1}`,
+                        name: `Node ${i + 1}`,
+                        centrality: d.centrality
+                }));
+
+        const colorScale = scaleSequential(interpolateBlues)
+                .domain([0, max(nodes, d => d.centrality)]);
 
 	// random links
 	const links = [];
@@ -224,10 +241,12 @@ function drawCentralityNetwork() {
 			.append('g')
 			.attr('transform', d => `translate(${d.x},${d.y})`);
 
-		nodeGroup
-			.append('circle')
-			.attr('r', d => 5 + d.centrality * 10)
-			.attr('fill', '#6366f1');
+                nodeGroup
+                        .append('circle')
+                        .attr('r', d => 5 + d.centrality * 10)
+                        .attr('fill', d => colorScale(d.centrality))
+                        .attr('stroke', d => d.name === selectedNodeName ? '#fbbf24' : null)
+                        .attr('stroke-width', d => d.name === selectedNodeName ? 4 : null);
 
 		nodeGroup
 			.append('text')
@@ -274,10 +293,12 @@ function drawCentralityNetwork() {
 				.on('drag', dragged)
 				.on('end', dragEnded));
 
-		const nodeElements = nodeGroup
-			.append('circle')
-			.attr('r', d => 5 + d.centrality * 10)
-			.attr('fill', '#6366f1');
+                const nodeElements = nodeGroup
+                        .append('circle')
+                        .attr('r', d => 5 + d.centrality * 10)
+                        .attr('fill', d => colorScale(d.centrality))
+                        .attr('stroke', d => d.name === selectedNodeName ? '#fbbf24' : null)
+                        .attr('stroke-width', d => d.name === selectedNodeName ? 4 : null);
 
 		// add node names as labels
 		nodeGroup
@@ -341,54 +362,68 @@ function drawCentralityNetwork() {
 		.attr('y', d => yScale(d.centrality))
 		.attr('width', xScale.bandwidth())
 		.attr('height', d => heightBars - yScale(d.centrality))
-		.attr('fill', '#34d399')
+                .attr('fill', d => d.name === selectedNodeName ? '#f59e42' : '#34d399')
 		.style('cursor', 'pointer')
-		.on('mouseover', function (event, d) {
-			select(this)
-				.attr('fill', '#6366f1');
-			tooltip
-				.style('opacity', 1)
-				.html(`<strong>${d.name}</strong><br>Centrality: ${d.centrality.toFixed(3)}`)
-				.style('left', (event.pageX + 10) + 'px')
-				.style('top', (event.pageY - 28) + 'px');
+                .on('mouseover', function (event, d) {
+                        select(this).attr('fill', '#6366f1');
+                        tooltip
+                                .style('opacity', 1)
+                                .html(`<strong>${d.name}</strong><br>Centrality: ${d.centrality.toFixed(3)}`)
+                                .style('left', (event.pageX + 10) + 'px')
+                                .style('top', (event.pageY - 28) + 'px');
 
-			// Highlight corresponding node in the network graph
-			const svgNet = select(networkContainer).select('svg');
-			if (svgNet.size()) {
-				svgNet.selectAll('g.nodes > g').each(function (nodeDatum) {
-					if (nodeDatum && nodeDatum.name === d.name) {
-						select(this).select('circle')
-							.attr('stroke', '#fbbf24')
-							.attr('stroke-width', 4);
-					}
-				});
-			}
-		})
-		.on('mousemove', function (event) {
-			tooltip
-				.style('left', (event.pageX + 10) + 'px')
-				.style('top', (event.pageY - 28) + 'px');
-		})
-		.on('mouseout', function (event, d) {
-			select(this)
-				.attr('fill', '#34d399');
-			tooltip.style('opacity', 0);
+                        const svgNet = select(networkContainer).select('svg');
+                        if (svgNet.size()) {
+                                svgNet.selectAll('g.nodes > g').each(function (nodeDatum) {
+                                        if (nodeDatum && nodeDatum.name === d.name) {
+                                                select(this).select('circle')
+                                                        .attr('stroke', '#fbbf24')
+                                                        .attr('stroke-width', 4);
+                                        }
+                                });
+                        }
+                })
+                .on('mousemove', function (event) {
+                        tooltip
+                                .style('left', (event.pageX + 10) + 'px')
+                                .style('top', (event.pageY - 28) + 'px');
+                })
+                .on('mouseout', function (event, d) {
+                        if (d.name !== selectedNodeName) {
+                                select(this).attr('fill', '#34d399');
+                        }
+                        tooltip.style('opacity', 0);
 
-			// Remove highlight from all nodes in the network graph
-			const svgNet = select(networkContainer).select('svg');
-			if (svgNet.size()) {
-				svgNet.selectAll('g.nodes > g').each(function () {
-					select(this).select('circle')
-						.attr('stroke', null)
-						.attr('stroke-width', null);
-				});
-			}
-		})
-		.on('click', function (event, d) {
-			svgBars.selectAll('.bar').attr('fill', '#34d399'); // reset all
-			select(this).attr('fill', '#f59e42'); // highlight selected
-			console.debug('Selected:', d);
-		});
+                        const svgNet = select(networkContainer).select('svg');
+                        if (svgNet.size()) {
+                                svgNet.selectAll('g.nodes > g').each(function (nodeDatum) {
+                                        const circle = select(this).select('circle');
+                                        if (nodeDatum.name === selectedNodeName) {
+                                                circle.attr('stroke', '#fbbf24').attr('stroke-width', 4);
+                                        } else {
+                                                if (nodeDatum.name === d.name) {
+                                                        circle.attr('stroke', null).attr('stroke-width', null);
+                                                }
+                                        }
+                                });
+                        }
+                })
+                .on('click', function (event, d) {
+                        selectedNodeName = d.name;
+                        svgBars.selectAll('.bar').attr('fill', b => b.name === d.name ? '#f59e42' : '#34d399');
+
+                        const svgNet = select(networkContainer).select('svg');
+                        if (svgNet.size()) {
+                                svgNet.selectAll('g.nodes > g').each(function (nodeDatum) {
+                                        const circle = select(this).select('circle');
+                                        if (nodeDatum.name === d.name) {
+                                                circle.attr('stroke', '#fbbf24').attr('stroke-width', 4);
+                                        } else {
+                                                circle.attr('stroke', null).attr('stroke-width', null);
+                                        }
+                                });
+                        }
+                });
 
 	// Tooltip div (add once)
 	const tooltip = select('body').append('div')
