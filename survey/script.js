@@ -1,5 +1,6 @@
-const form = document.querySelector('#surveyForm');
-const followups = document.querySelectorAll('.followup');
+const form = document.querySelector('#surveyForm'),
+	followups = document.querySelectorAll('.followup'),
+	backbtn = document.querySelector('#backbtn')
 
 // utility: show followup when trigger field matches any of its data-value list
 function updateFollowups(event) {

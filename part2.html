@@ -73,11 +73,11 @@
 					</div>
 				</section>
 
-				<div class="grid">
+				<div class="grid" id="homegrid">
 					<div
 						class="card"
 						style="cursor: pointer"
-						onclick="switchTab('centrality')">
+						data-role="centrality">
 						<h2>Network Centrality</h2>
 						<p>
 							Visualizes the collaboration network of contributors
@@ -89,7 +89,7 @@
 					<div
 						class="card"
 						style="cursor: pointer"
-						onclick="switchTab('ladder')">
+						data-role="ladder">
 						<h2>Ladder Flow</h2>
 						<p>
 							Shows contributor progression through the community
@@ -101,7 +101,7 @@
 					<div
 						class="card"
 						style="cursor: pointer"
-						onclick="switchTab('diversity')">
+						data-role="diversity">
 						<h2>Regional Diversity</h2>
 						<p>
 							Tracks geographic diversity of contributors.<br />

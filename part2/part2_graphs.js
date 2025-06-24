@@ -27,6 +27,22 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 
 	window.addEventListener('resize', drawCentralityNetwork);
+
+	const homeGrid = document.getElementById('homegrid');
+	if (homeGrid) {
+		homeGrid.addEventListener('click', (evt) => {
+			const card = evt.target.closest('.card');
+			if (card && homeGrid.contains(card)) {
+				if (!card.dataset.role) return;
+				let tab = card.dataset.role;
+
+				if (tab) {
+					const btn = document.querySelector(`#page-tabs button[data-role="${tab}"]`);
+					btn?.click();
+				}
+			}
+		});
+	}
 });
 
 const darkCardLayout = {

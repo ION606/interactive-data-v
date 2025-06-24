@@ -4,4 +4,5 @@ part2_metrics/
 .venv/
 project/data/
 *.csv
+!ccsurvey.csv
 node_modules/
