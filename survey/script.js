@@ -1,6 +1,6 @@
 const form = document.querySelector('#surveyForm'),
-	followups = document.querySelectorAll('.followup'),
-	backbtn = document.querySelector('#backbtn')
+        followups = document.querySelectorAll('.followup'),
+        backbtn = document.querySelector('#backbtn');
 
 // utility: show followup when trigger field matches any of its data-value list
 function updateFollowups(event) {
@@ -21,7 +21,11 @@ function updateFollowups(event) {
 
 // attach listeners to all relevant inputs/selects
 form.querySelectorAll('input[type="radio"], select').forEach(el => {
-	el.addEventListener('change', updateFollowups);
+        el.addEventListener('change', updateFollowups);
+});
+
+backbtn?.addEventListener('click', () => {
+        window.location.href = '/part2.html';
 });
 
 // basic client-side validation feedback
@@ -40,9 +44,10 @@ form.addEventListener('submit', event => {
 			}
 		})
 			.then(response => {
-				if (response.ok) {
-					alert('Thank you for completing the survey!');
-					form.reset();
+                                if (response.ok) {
+                                        alert('Thank you for completing the survey!');
+                                        form.reset();
+                                        window.location.href = '/part2.html';
 				} else {
 					response.json().then(data => {
 						if (data.errors) {

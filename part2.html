@@ -40,11 +40,11 @@
 
 			<!-- Home Section with 4 cards -->
 			<section data-role="home" class="active">
-				<section id="about-kubernetes" class="about-section">
-					<div class="about-content">
-						<img
-							src="https://github.com/kubernetes/kubernetes/blob/master/logo/logo.png?raw=true"
-							alt="Kubernetes Logo"
+                                <section id="about-kubernetes" class="about-section">
+                                        <div class="about-content">
+                                                <img
+                                                        src="https://github.com/kubernetes/kubernetes/blob/master/logo/logo.png?raw=true"
+                                                        alt="Kubernetes Logo"
 							style="
 								background-color: transparent;
 								border: none;
@@ -68,10 +68,19 @@
 										>Learn more at kubernetes.io</a
 									>
 								</span>
-							</p>
-						</div>
-					</div>
-				</section>
+                                                        </p>
+                                                </div>
+                                        </div>
+                                </section>
+
+                                <div class="card" style="margin-bottom:1rem" id="project-info">
+                                        <h2>What Is This Project?</h2>
+                                        <p>
+                                                An exploration of contributor engagement in the Kubernetes ecosystem.
+                                                The dashboard lets you inspect collaboration patterns and trends across
+                                                roles and regions.
+                                        </p>
+                                </div>
 
 				<div class="grid" id="homegrid">
 					<div
@@ -114,9 +123,13 @@
 
 			<!-- One section per page, each with both graph variants stacked vertically -->
 			<section data-role="centrality">
-				<button id="toggle-layout-btn" style="margin-bottom: 1rem">
-					Toggle Layout
-				</button>
+                                <button id="toggle-layout-btn" style="margin-bottom: 1rem">
+                                        Toggle Layout
+                                </button>
+                                <label style="margin-left:1rem">
+                                        Min Centrality:
+                                        <input type="range" id="centrality-filter" min="0" max="1" step="0.05" value="0" />
+                                </label>
 				<div class="card" style="height: 100%">
 					<h2>Network Centrality</h2>
 					<div id="centrality-network" class="graph"></div>
@@ -134,25 +147,37 @@
 						structure.
 					</p>
 				</div>
-				<div class="card" style="width: 95%">
-					<h2>Centrality Scores – Ranked Bars</h2>
-					<div id="centrality-bars" class="graph"></div>
-				</div>
-			</section>
+                                <div class="card" style="width: 95%">
+                                        <h2>Centrality Scores – Ranked Bars</h2>
+                                        <div id="centrality-bars" class="graph"></div>
+                                        <p class="explain" style="text-align:center;color:#cbd5e1;font-size:0.95rem;">
+                                                Click a bar to highlight the corresponding contributor in the network.
+                                        </p>
+                                </div>
+                        </section>
 
-			<section data-role="ladder">
-				<div class="card">
-					<h2>Ladder Flow – Line</h2>
-					<div id="ladder-line" class="graph"></div>
-				</div>
-			</section>
+                        <section data-role="ladder">
+                                <div class="card">
+                                        <h2>Ladder Flow – Line</h2>
+                                        <div id="ladder-line" class="graph"></div>
+                                        <p class="explain" style="text-align:center;color:#cbd5e1;font-size:0.95rem;">
+                                                "Outsider" contributors are new or infrequent participants,
+                                                "Rising" contributors show increasing activity, and
+                                                "Core" members consistently maintain the project.
+                                        </p>
+                                </div>
+                        </section>
 
-			<section data-role="diversity">
-				<div class="card">
-					<h2>Regional Diversity</h2>
-					<div id="diversity-area" class="graph"></div>
-				</div>
-			</section>
+                        <section data-role="diversity">
+                                <div class="card">
+                                        <h2>Regional Diversity</h2>
+                                        <div id="diversity-area" class="graph"></div>
+                                        <p class="explain" style="text-align:center;color:#cbd5e1;font-size:0.95rem;">
+                                                This view highlights geographic participation trends
+                                                across North America, Europe, APAC and Latin America.
+                                        </p>
+                                </div>
+                        </section>
 		</main>
 
 		<!-- Tutorial Modal -->
