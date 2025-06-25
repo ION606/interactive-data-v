@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Survey Results</title>
+
+		<link rel="stylesheet" href="style.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+		<script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+
+		<style>
+			h3 {
+				margin-top: 36px;
+				margin-bottom: 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>survey results</h1>
+			<nav>
+				<a href="index.html">home</a>
+				<a href="survey.html">survey results</a>
+				<a
+					href="paper/InteractiveDataVisualizationKubernetesFinalPa.html">
+					paper
+				</a>
+			</nav>
+		</header>
+
+		<main>
+			<div id="charts"></div>
+
+			<h2>Raw Data Table</h2>
+			<table id="results-table" aria-describedby="responsesChart"></table>
+		</main>
+
+		<footer><p>&copy; 2025</p></footer>
+		<script type="module" src="survey.js"></script>
+	</body>
+</html>

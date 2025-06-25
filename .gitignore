@@ -5,4 +5,5 @@ part2_metrics/
 project/data/
 *.csv
 !ccsurvey.csv
+!survey_results.csv
 node_modules/

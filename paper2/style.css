@@ -1,0 +1,79 @@
+/* basic dark mode styling */
+* {
+	box-sizing: border-box;
+}
+
+html {
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+	margin: 0;
+	background-color: #121212;
+	color: #e0e0e0;
+}
+
+header {
+	background-color: #1f1f1f;
+	padding: 1rem 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1px solid #333;
+}
+
+nav a {
+	color: #e0e0e0;
+	text-decoration: none;
+	margin-right: 1rem;
+}
+
+nav a:hover {
+	text-decoration: underline;
+}
+
+main {
+	padding: 2rem;
+	max-width: 960px;
+	margin: 0 auto;
+}
+
+canvas {
+	max-width: 100%;
+}
+
+footer {
+	text-align: center;
+	padding: 1rem;
+	border-top: 1px solid #333;
+	color: #aaa;
+}
+
+canvas#chart {
+	background-color: #1d1d1d;
+	border: 1px solid #333;
+	border-radius: 6px;
+}
+
+#results-table {
+	width: 100%;
+	border-collapse: collapse;
+	color: #e0e0e0;
+	/* same light grey as chart labels */
+	background: #1d1d1d;
+	/* same panel shade */
+}
+
+#results-table thead {
+	font-weight: 600;
+}
+
+#results-table th,
+#results-table td {
+	padding: 0.5rem 0.75rem;
+	border: 1px solid #333;
+}
+
+#results-table tr:nth-child(even) {
+	background: #242424;
+}

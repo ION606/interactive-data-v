@@ -1,0 +1,19 @@
+question,option,count,graph_description,scale
+Ease comparing regions,1,1,bar chart showing how easy respondents found comparing contributor counts between regions;,likert 1 (hard) – 5 (easy);
+Ease comparing regions,2,3,bar chart showing how easy respondents found comparing contributor counts between regions;,likert 1 (hard) – 5 (easy);
+Ease comparing regions,3,1,bar chart showing how easy respondents found comparing contributor counts between regions;,likert 1 (hard) – 5 (easy);
+Feedback enough,1,3,stacked bar chart summarising whether users felt the site gave sufficient interactive feedback;,"categorical: 1 always, 2 sometimes, 3 never;"
+Feedback enough,2,2,stacked bar chart summarising whether users felt the site gave sufficient interactive feedback;,"categorical: 1 always, 2 sometimes, 3 never;"
+Prior interest in OSS analytics,1,1,likert-style bar chart of respondents’ prior interest in open‑source contributor analytics;,likert 1 (not interested) – 5 (very interested);
+Prior interest in OSS analytics,2,3,likert-style bar chart of respondents’ prior interest in open‑source contributor analytics;,likert 1 (not interested) – 5 (very interested);
+Prior interest in OSS analytics,3,1,likert-style bar chart of respondents’ prior interest in open‑source contributor analytics;,likert 1 (not interested) – 5 (very interested);
+Layout toggle visibility,1,4,binary bar chart indicating whether toggling layout helped reveal clusters;,"categorical: 1 yes, 2 no;"
+Layout toggle visibility,2,1,binary bar chart indicating whether toggling layout helped reveal clusters;,"categorical: 1 yes, 2 no;"
+Device & screen,1,3,categorical bar chart of device types and approximate screen sizes used during the test session;,"categorical: 1 desktop ≥24″, 2 laptop 13–15″, 3 tablet ≤12″, 4 smartphone ≤7″;"
+Device & screen,2,1,categorical bar chart of device types and approximate screen sizes used during the test session;,"categorical: 1 desktop ≥24″, 2 laptop 13–15″, 3 tablet ≤12″, 4 smartphone ≤7″;"
+Device & screen,3,1,categorical bar chart of device types and approximate screen sizes used during the test session;,"categorical: 1 desktop ≥24″, 2 laptop 13–15″, 3 tablet ≤12″, 4 smartphone ≤7″;"
+Colours helpful,1,3,stacked bar chart on how helpful colour and node size were for distinguishing roles;,"categorical: 1 always, 2 sometimes, 3 never;"
+Colours helpful,2,2,stacked bar chart on how helpful colour and node size were for distinguishing roles;,"categorical: 1 always, 2 sometimes, 3 never;"
+Consult metrics frequency,1,2,bar chart of how frequently contributors consult code metrics;,"ordinal: 1 never, 2 < monthly, 3 monthly, 4 weekly, 5 daily;"
+Consult metrics frequency,2,2,bar chart of how frequently contributors consult code metrics;,"ordinal: 1 never, 2 < monthly, 3 monthly, 4 weekly, 5 daily;"
+Consult metrics frequency,3,1,bar chart of how frequently contributors consult code metrics;,"ordinal: 1 never, 2 < monthly, 3 monthly, 4 weekly, 5 daily;"
